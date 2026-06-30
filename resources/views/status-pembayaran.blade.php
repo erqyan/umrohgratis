@@ -61,6 +61,7 @@
         </div>
 
         <div style="display: grid; gap: 14px;">
+            <a href="{{ route('pembayaran.invoice', [$paket->id, $pembayaran->id]) }}" target="_blank" class="btn btn-success"><i class="fa-solid fa-file-pdf"></i> Unduh Invoice (PDF)</a>
             <a href="{{ route('dashboard') }}" class="btn btn-outline-success">Kembali ke Dashboard</a>
         </div>
     </div>

@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\PaketUmrah;
 use App\Models\Pembayaran;
 use App\Models\Pendaftaran;
+use App\Traits\ExportsInvoicePdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
 {
+    use ExportsInvoicePdf;
+
     private const BIAYA_ADMIN = 250000;
 
     /**
@@ -103,5 +106,23 @@ class PembayaranController extends Controller
             'paket' => $paket,
             'pembayaran' => $pembayaran,
         ]);
+    }
+
+    /**
+     * Unduh invoice/kuitansi PDF untuk pembayaran milik jamaah yang login.
+     */
+    public function invoice($paketId, $pembayaranId)
+    {
+        $pembayaran = Pembayaran::with('pendaftaran.jamaah', 'pendaftaran.paketUmrah')
+            ->findOrFail($pembayaranId);
+
+        $jamaah = Auth::user()->jamaah;
+
+        // Cek kepemilikan: pembayaran harus milik jamaah yang sedang login.
+        if (! $jamaah || $pembayaran->pendaftaran->jamaah_id !== $jamaah->id) {
+            abort(403, 'Anda tidak memiliki akses ke invoice ini.');
+        }
+
+        return $this->downloadPembayaranInvoice($pembayaran);
     }
 }

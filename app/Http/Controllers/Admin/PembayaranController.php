@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\PembayaranExport;
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
+use App\Traits\ExportsInvoicePdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PembayaranController extends Controller
 {
+    use ExportsInvoicePdf;
+
     /**
      * Daftar seluruh pembayaran.
      */
@@ -67,5 +72,28 @@ class PembayaranController extends Controller
         }
 
         return back()->with('success', 'Status pembayaran berhasil diperbarui.');
+    }
+
+    /**
+     * Export seluruh pembayaran ke file Excel (.xlsx) sesuai filter aktif.
+     */
+    public function export(Request $request)
+    {
+        $search = $request->query('q', '');
+        $status = $request->query('status', '');
+
+        $filename = 'laporan-pembayaran-' . now()->format('Y-m-d') . '.xlsx';
+
+        return Excel::download(new PembayaranExport($search, $status), $filename);
+    }
+
+    /**
+     * Unduh invoice/kuitansi PDF untuk satu pembayaran.
+     */
+    public function invoice($id)
+    {
+        $pembayaran = Pembayaran::with('pendaftaran.jamaah', 'pendaftaran.paketUmrah')->findOrFail($id);
+
+        return $this->downloadPembayaranInvoice($pembayaran);
     }
 }

@@ -94,6 +94,7 @@ Route::middleware(['auth', 'jamaah'])->group(function () {
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('/pembayaran/{id}/confirm', [PembayaranController::class, 'confirm'])->name('pembayaran.confirm');
     Route::get('/pembayaran/{id}/status/{pembayaran}', [PembayaranController::class, 'status'])->name('pembayaran.status');
+    Route::get('/pembayaran/{id}/invoice/{pembayaran}', [PembayaranController::class, 'invoice'])->name('pembayaran.invoice');
 });
 
 /*
@@ -128,4 +129,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     // Pembayaran
     Route::get('/pembayaran', [AdminPembayaranController::class, 'index'])->name('pembayaran');
     Route::post('/pembayaran/{id}/status', [AdminPembayaranController::class, 'updateStatus'])->name('pembayaran.status');
+    Route::get('/pembayaran/export', [AdminPembayaranController::class, 'export'])->name('pembayaran.export');
+    Route::get('/pembayaran/{id}/invoice', [AdminPembayaranController::class, 'invoice'])->name('pembayaran.invoice');
 });

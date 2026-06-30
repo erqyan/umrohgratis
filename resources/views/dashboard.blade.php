@@ -17,6 +17,11 @@
             @if($pendaftaranAktif && $pendaftaranAktif->paketUmrah)
                 <h3 style="font-size: 1.1rem; font-weight: 700; margin: 0 0 4px;">{{ $pendaftaranAktif->paketUmrah->nama }}</h3>
                 <p style="color: #7d8d83; font-size: 0.85rem; margin: 0;">{{ $pendaftaranAktif->paketUmrah->durasi_text }} &middot; Status: {{ $pendaftaranAktif->status_label }}</p>
+                @if($pendaftaranAktif->pembayaranTerakhir)
+                    <a href="{{ route('pembayaran.invoice', [$pendaftaranAktif->paket_umrah_id, $pendaftaranAktif->pembayaranTerakhir->id]) }}" target="_blank" style="margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; background: #0c8a63; color: #fff; border-radius: 8px; padding: 7px 14px; font-weight: 600; text-decoration: none; font-size: 0.8rem;">
+                        <i class="fa-solid fa-file-pdf"></i> Cetak Invoice Pembayaran
+                    </a>
+                @endif
             @else
                 <h3 style="font-size: 1.1rem; font-weight: 700; margin: 0 0 4px;">Belum Ada Paket</h3>
                 <p style="color: #7d8d83; font-size: 0.85rem; margin: 0;">Silakan pilih paket umrah di bawah ini.</p>
@@ -100,6 +105,19 @@
                                 {{ $item->status_label }}
                             </span>
                         </div>
+                        @if($item->pembayaranTerakhir)
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e8eee9; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <div>
+                                    <small style="color: #7d8d83; display: block; margin-bottom: 2px;">Pembayaran: Rp {{ number_format($item->pembayaranTerakhir->total, 0, ",", ".") }}</small>
+                                    <small style="color: {{ $item->pembayaranTerakhir->status === "terverifikasi" ? "#0c8a63" : "#b45309" }}; font-weight: 600;">
+                                        {{ $item->pembayaranTerakhir->status_label }}
+                                    </small>
+                                </div>
+                                <a href="{{ route('pembayaran.invoice', [$item->paket_umrah_id, $item->pembayaranTerakhir->id]) }}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #fff; color: #0c8a63; border: 1px solid #0c8a63; border-radius: 8px; padding: 6px 12px; font-weight: 600; text-decoration: none; font-size: 0.78rem;">
+                                    <i class="fa-solid fa-file-pdf"></i> Cetak Invoice
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>

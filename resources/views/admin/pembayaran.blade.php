@@ -26,17 +26,22 @@
     </div>
 
     <div class="data-card">
-        <form method="GET" action="{{ route('admin.pembayaran') }}" class="d-flex gap-2 mb-3 flex-wrap" style="max-width: 700px;">
-            <input type="text" name="q" class="form-control" placeholder="Cari nama jamaah..." value="{{ $search ?? '' }}" style="flex: 1; min-width: 200px;">
-            <select name="status" class="form-select" style="max-width: 180px;">
-                <option value="">Semua Status</option>
-                <option value="menunggu" {{ ($status ?? '') === 'menunggu' ? 'selected' : '' }}>Menunggu</option>
-                <option value="terverifikasi" {{ ($status ?? '') === 'terverifikasi' ? 'selected' : '' }}>Terverifikasi</option>
-                <option value="ditolak" {{ ($status ?? '') === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-            </select>
-            <button type="submit" class="btn btn-sm-green"><i class="fas fa-search"></i> Cari</button>
-            @if($search || $status)<a href="{{ route('admin.pembayaran') }}" class="btn btn-outline-secondary">Reset</a>@endif
-        </form>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <form method="GET" action="{{ route('admin.pembayaran') }}" class="d-flex gap-2 flex-wrap" style="max-width: 700px; flex: 1;">
+                <input type="text" name="q" class="form-control" placeholder="Cari nama jamaah..." value="{{ $search ?? '' }}" style="flex: 1; min-width: 200px;">
+                <select name="status" class="form-select" style="max-width: 180px;">
+                    <option value="">Semua Status</option>
+                    <option value="menunggu" {{ ($status ?? '') === 'menunggu' ? 'selected' : '' }}>Menunggu</option>
+                    <option value="terverifikasi" {{ ($status ?? '') === 'terverifikasi' ? 'selected' : '' }}>Terverifikasi</option>
+                    <option value="ditolak" {{ ($status ?? '') === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                </select>
+                <button type="submit" class="btn btn-sm-green"><i class="fas fa-search"></i> Cari</button>
+                @if($search || $status)<a href="{{ route('admin.pembayaran') }}" class="btn btn-outline-secondary">Reset</a>@endif
+            </form>
+            <a href="{{ route('admin.pembayaran.export', array_filter(['q' => $search ?? '', 'status' => $status ?? ''])) }}" class="btn btn-sm-green" style="white-space: nowrap;">
+                <i class="fas fa-file-excel"></i> Export Excel
+            </a>
+        </div>
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -78,8 +83,10 @@
                             <td><span class="{{ $statusColor }}">{{ $p->status_label }}</span></td>
                             <td>
                                 <div class="dropdown">
-                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">Ubah</button>
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">Aksi</button>
                                     <ul class="dropdown-menu">
+                                        <li><a href="{{ route('admin.pembayaran.invoice', $p->id) }}" target="_blank" class="dropdown-item"><i class="fas fa-file-pdf text-danger"></i> Cetak Invoice</a></li>
+                                        <li><hr class="dropdown-divider"></li>
                                         <li><form action="{{ route('admin.pembayaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="terverifikasi" class="dropdown-item text-success"><i class="fas fa-check"></i> Verifikasi</button></form></li>
                                         <li><form action="{{ route('admin.pembayaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="ditolak" class="dropdown-item text-danger"><i class="fas fa-times"></i> Tolak</button></form></li>
                                         <li><form action="{{ route('admin.pembayaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="menunggu" class="dropdown-item"><i class="fas fa-clock"></i> Kembalikan ke Menunggu</button></form></li>
