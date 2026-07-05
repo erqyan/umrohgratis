@@ -64,8 +64,11 @@
                     $cardClass = $paket->tipe === "vip" ? "linear-gradient(135deg, #9370db, #8b5fbf)"
                         : ($paket->tipe === "plus" ? "linear-gradient(135deg, #d4a137, #b8860b)"
                         : "linear-gradient(135deg, #0c8a63, #087554)");
+                    $bgStyle = $paket->image
+                        ? 'background-image: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url("' . asset('storage/' . $paket->image) . '"); background-size: cover; background-position: center;'
+                        : 'background: ' . $cardClass . ';';
                 @endphp
-                <div style="border-radius: 16px; padding: 20px; color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.1); background: {{ $cardClass }};">
+                <div style="border-radius: 16px; padding: 20px; color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.1); min-height: 180px; {{ $bgStyle }}">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 16px;">
                         <div>
                             <h5 style="margin: 0 0 4px; font-size: 1.05rem; font-weight: 700;">{{ $paket->nama }}</h5>

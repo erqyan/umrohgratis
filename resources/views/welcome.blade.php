@@ -317,7 +317,7 @@
                             @if($paket->tipe === 'plus')
                                 <span class="paket-badge-popular"><i class="fa-solid fa-fire"></i> Terpopuler</span>
                             @endif
-                            <div class="paket-head {{ $paket->tipe }}">
+                            <div class="paket-head {{ $paket->tipe }}" @if($paket->image) style="background-image: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.25)), url('{{ asset('storage/' . $paket->image) }}'); background-size: cover; background-position: center;" @endif>
                                 <span class="paket-tag">{{ $paket->tipe_label }}</span>
                                 <h3 class="paket-name">{{ $paket->nama }}</h3>
                                 <div class="paket-dur"><i class="fa-solid fa-clock"></i> {{ $paket->durasi_text }}</div>

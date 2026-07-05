@@ -8,12 +8,25 @@
         <strong>{{ $paket->nama }}</strong>
     </div>
 
+    @if($paket->image)
+    <div style="border-radius: 20px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); position: relative;">
+        <img src="{{ asset('storage/' . $paket->image) }}" alt="{{ $paket->nama }}" style="width: 100%; height: 280px; object-fit: cover; display: block;">
+        <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0) 100%);"></div>
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; color: #fff;">
+            <span style="background: rgba(12,138,99,0.95); padding: 4px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;">{{ $paket->tipe_label }}</span>
+            <h1 style="font-size: 1.75rem; font-weight: 700; margin: 8px 0 4px;">{{ $paket->nama }}</h1>
+            <p style="font-size: 1.2rem; opacity: 0.95; margin: 0;">Rp {{ number_format($paket->harga, 0, ',', '.') }}</p>
+            <p style="opacity: 0.9; margin: 2px 0 0;"><i class="fa-solid fa-clock"></i> {{ $paket->durasi_text }}</p>
+        </div>
+    </div>
+    @else
     <div style="background: linear-gradient(135deg, #0c8a63, #087554); border-radius: 20px; padding: 40px; color: #fff; text-align: center; margin-bottom: 24px;">
         <i class="fa-solid fa-mosque" style="font-size: 3rem; margin-bottom: 12px;"></i>
         <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 8px;">{{ $paket->nama }}</h1>
         <p style="font-size: 1.2rem; opacity: 0.9;">Rp {{ number_format($paket->harga, 0, ',', '.') }}</p>
         <p style="opacity: 0.85;">{{ $paket->durasi_text }}</p>
     </div>
+    @endif
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div style="background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
