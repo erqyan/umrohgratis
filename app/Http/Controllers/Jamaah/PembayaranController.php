@@ -102,9 +102,19 @@ class PembayaranController extends Controller
         $paket = PaketUmrah::findOrFail($paketId);
         $pembayaran = Pembayaran::with('pendaftaran.jamaah')->findOrFail($pembayaranId);
 
+        // Cari notifikasi penolakan terkait pembayaran ini (jika ditolak).
+        $notifikasiPenolakan = null;
+        if ($pembayaran->status === 'ditolak') {
+            $notifikasiPenolakan = \App\Models\NotifikasiJamaah::where('terkait_type', Pembayaran::class)
+                ->where('terkait_id', $pembayaran->id)
+                ->latest()
+                ->first();
+        }
+
         return view('status-pembayaran', [
             'paket' => $paket,
             'pembayaran' => $pembayaran,
+            'notifikasiPenolakan' => $notifikasiPenolakan,
         ]);
     }
 

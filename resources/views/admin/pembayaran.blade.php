@@ -88,12 +88,42 @@
                                         <li><a href="{{ route('admin.pembayaran.invoice', $p->id) }}" target="_blank" class="dropdown-item"><i class="fas fa-file-pdf text-danger"></i> Cetak Invoice</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><form action="{{ route('admin.pembayaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="terverifikasi" class="dropdown-item text-success"><i class="fas fa-check"></i> Verifikasi</button></form></li>
-                                        <li><form action="{{ route('admin.pembayaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="ditolak" class="dropdown-item text-danger"><i class="fas fa-times"></i> Tolak</button></form></li>
+                                        <li><button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#tolakPembayaran-{{ $p->id }}"><i class="fas fa-times"></i> Tolak</button></li>
                                         <li><form action="{{ route('admin.pembayaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="menunggu" class="dropdown-item"><i class="fas fa-clock"></i> Kembalikan ke Menunggu</button></form></li>
                                     </ul>
                                 </div>
                             </td>
                         </tr>
+
+                        <!-- Modal Tolak Pembayaran -->
+                        <div class="modal fade" id="tolakPembayaran-{{ $p->id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background: #ffe6e6;">
+                                        <h5 class="modal-title" style="color: #d4483c;"><i class="fas fa-exclamation-triangle"></i> Tolak Pembayaran</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="{{ route('admin.pembayaran.status', $p->id) }}" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <p style="font-size: 0.9rem; color: #5c7264;">
+                                                Anda akan menolak pembayaran dari <strong>{{ $p->pendaftaran->jamaah->nama ?? '-' }}</strong> sebesar <strong>Rp {{ number_format($p->total, 0, ',', '.') }}</strong>.
+                                            </p>
+                                            <div class="mb-2">
+                                                <label class="form-label fw-bold">Alasan Penolakan <span style="color: #d4483c;">*</span></label>
+                                                <textarea name="alasan" rows="4" class="form-control" placeholder="Contoh: Bukti pembayaran tidak jelas / nominal tidak sesuai / bukti tidak valid. Pesan ini akan dikirim ke jamaah." required minlength="5" maxlength="500"></textarea>
+                                                <small class="text-muted">Pesan ini akan ditampilkan kepada jamaah. Min 5 karakter.</small>
+                                            </div>
+                                            <input type="hidden" name="status" value="ditolak">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Tolak &amp; Kirim Pesan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     @empty
                         <tr><td colspan="7" style="text-align: center; padding: 40px; color: #7d8d83;">Tidak ada data pembayaran.</td></tr>
                     @endforelse

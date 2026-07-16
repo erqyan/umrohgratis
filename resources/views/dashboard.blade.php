@@ -8,6 +8,39 @@
         <p style="color: #7d8d83; font-size: 0.95rem;">Selamat datang kembali, {{ $user->name }}</p>
     </div>
 
+    @if($notifikasiBelumDibaca->isNotEmpty())
+    <div style="margin-bottom: 20px;">
+        @foreach($notifikasiBelumDibaca as $notif)
+            <div style="background: #fff5f5; border: 1px solid #f5c2c2; border-left: 4px solid {{ $notif->tipe_warna }}; border-radius: 14px; padding: 16px 20px; margin-bottom: 12px; display: flex; gap: 14px; align-items: flex-start;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: {{ $notif->tipe_warna }}; color: #fff; display: grid; place-items: center; font-size: 1.1rem; flex-shrink: 0;">
+                    <i class="fa-solid fa-exclamation"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px;">
+                        <strong style="font-size: 0.95rem; color: {{ $notif->tipe_warna }};">{{ $notif->judul }}</strong>
+                        <small style="color: #9ca9a2; font-size: 0.75rem;">{{ $notif->created_at->diffForHumans() }}</small>
+                    </div>
+                    <p style="margin: 0 0 10px; color: #5c4848; font-size: 0.88rem; line-height: 1.5;">{{ $notif->pesan }}</p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        @if($notif->tipe === 'penolakan_pembayaran' && $notif->terkait_id)
+                            @php
+                                $pembayaran = \App\Models\Pembayaran::with('pendaftaran.paketUmrah')->find($notif->terkait_id);
+                            @endphp
+                            @if($pembayaran && $pembayaran->pendaftaran && $pembayaran->pendaftaran->paketUmrah)
+                                <a href="{{ route('pembayaran.status', [$pembayaran->pendaftaran->paket_umrah_id, $pembayaran->id]) }}" style="font-size: 0.8rem; color: #0c8a63; font-weight: 600; text-decoration: none;"><i class="fa-solid fa-arrow-right"></i> Lihat Detail Pembayaran</a>
+                            @endif
+                        @endif
+                        <form action="{{ route('notifikasi.baca', $notif->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" style="font-size: 0.8rem; color: #7d8d83; font-weight: 600; background: none; border: none; cursor: pointer; text-decoration: underline;">Tandai dibaca</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+    @endif
+
     <div style="background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; gap: 16px; align-items: flex-start;">
         <div style="width: 50px; height: 50px; background: #e8f5f0; border-radius: 12px; display: grid; place-items: center; color: #0c8a63; font-size: 1.5rem; flex-shrink: 0;">
             <i class="fa-solid fa-briefcase"></i>
@@ -85,9 +118,25 @@
                             &middot; <i class="fa-solid fa-plane"></i> {{ $paket->maskapai ?? "-" }}
                         </p>
                     @endif
-                    <a href="{{ route("paket.detail", $paket->id) }}" style="background: rgba(255,255,255,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 16px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem;">
-                        <i class="fa-solid fa-arrow-right"></i> Lihat Paket
-                    </a>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <a href="{{ route("paket.detail", $paket->id) }}" style="background: rgba(255,255,255,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 16px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem;">
+                            <i class="fa-solid fa-arrow-right"></i> Lihat Paket
+                        </a>
+                        @if($paket->kuota !== null)
+                            @php
+                                $sisa = $paket->sisa_kuota;
+                                $badgeColor = $sisa <= 5 ? 'rgba(255,193,7,0.9)' : 'rgba(255,255,255,0.25)';
+                                $badgeTextColor = $sisa <= 5 ? '#5a4500' : '#fff';
+                            @endphp
+                            <span style="background: {{ $badgeColor }}; color: {{ $badgeTextColor }}; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">
+                                <i class="fa-solid fa-users"></i> Sisa {{ $sisa }} kursi
+                            </span>
+                        @else
+                            <span style="background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">
+                                <i class="fa-solid fa-infinity"></i> Kuota Tidak Terbatas
+                            </span>
+                        @endif
+                    </div>
                 </div>
             @endforeach
         </div>

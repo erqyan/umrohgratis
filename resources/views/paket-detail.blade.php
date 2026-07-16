@@ -47,6 +47,56 @@
         </div>
     </div>
 
+    @php
+        $kuotaPenuh = $paket->kuota_penuh;
+        $sisaKuota = $paket->sisa_kuota;
+        $terpakai = $paket->kuota_terpakai;
+        $kuotaTotal = $paket->kuota;
+        if ($kuotaTotal === null) {
+            $badgeTeks = 'Tidak Terbatas';
+            $badgeBg = '#6c757d';
+            $badgeFg = '#fff';
+        } elseif ($kuotaPenuh) {
+            $badgeTeks = 'Penuh';
+            $badgeBg = '#dc3545';
+            $badgeFg = '#fff';
+        } elseif ($sisaKuota <= 5) {
+            $badgeTeks = 'Hampir Penuh';
+            $badgeBg = '#ffc107';
+            $badgeFg = '#5a4500';
+        } else {
+            $badgeTeks = 'Tersedia';
+            $badgeBg = '#0c8a63';
+            $badgeFg = '#fff';
+        }
+        $persen = $kuotaTotal !== null ? min(100, round(($terpakai / $kuotaTotal) * 100)) : 0;
+    @endphp
+
+    <div style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin: 0;"><i class="fa-solid fa-users" style="color: #0c8a63;"></i> Status Kuota Paket</h3>
+            <span style="background: {{ $badgeBg }}; color: {{ $badgeFg }}; padding: 5px 14px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;">{{ $badgeTeks }}</span>
+        </div>
+        @if($kuotaTotal !== null)
+            <div style="font-size: 1rem; font-weight: 600; color: #1b1b18; margin-bottom: 8px;">
+                Sisa <span style="color: {{ $kuotaPenuh ? '#dc3545' : '#0c8a63' }}; font-size: 1.2rem;">{{ $sisaKuota }}</span> kursi dari {{ $kuotaTotal }}
+            </div>
+            <div style="height: 10px; background: #e8f5f0; border-radius: 999px; overflow: hidden;">
+                <div style="height: 100%; width: {{ $persen }}%; background: {{ $kuotaPenuh ? '#dc3545' : ($sisaKuota <= 5 ? '#ffc107' : '#0c8a63') }}; border-radius: 999px; transition: width .3s;"></div>
+            </div>
+            <div style="font-size: 0.8rem; color: #7d8d83; margin-top: 6px;">
+                Terisi {{ $terpakai }} kursi ({{ $persen }}%)
+            </div>
+        @else
+            <div style="font-size: 1rem; font-weight: 600; color: #1b1b18; margin-bottom: 8px;">
+                Kuota <span style="color: #6c757d;">Tidak Terbatas</span>
+            </div>
+            <div style="font-size: 0.8rem; color: #7d8d83;">
+                Saat ini terisi {{ $terpakai }} pendaftaran aktif.
+            </div>
+        @endif
+    </div>
+
     @if(!empty($paket->deskripsi))
     <div style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
         <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px;">Deskripsi Paket</h3>
@@ -99,8 +149,14 @@
     @endif
 
     <div style="position: sticky; bottom: 0; background: #f5f5f5; padding: 16px 0;">
-        <a href="{{ route('pendaftaran.show', $paket->id) }}" style="display: block; background: #0c8a63; color: #fff; text-align: center; border-radius: 12px; padding: 16px; font-weight: 700; font-size: 1.05rem; text-decoration: none; transition: background .2s;">
-            <i class="fa-solid fa-edit"></i> Daftar Paket Ini
-        </a>
+        @if($kuotaPenuh)
+            <div style="display: block; background: #ccc; color: #666; text-align: center; border-radius: 12px; padding: 16px; font-weight: 700; font-size: 1.05rem; cursor: not-allowed;">
+                <i class="fa-solid fa-ban"></i> Kuota Penuh
+            </div>
+        @else
+            <a href="{{ route('pendaftaran.show', $paket->id) }}" style="display: block; background: #0c8a63; color: #fff; text-align: center; border-radius: 12px; padding: 16px; font-weight: 700; font-size: 1.05rem; text-decoration: none; transition: background .2s;">
+                <i class="fa-solid fa-edit"></i> Daftar Paket Ini
+            </a>
+        @endif
     </div>
 @endsection

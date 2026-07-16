@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD Sutech - Smart Umrah</title>
+<style>
+  @page { size: A4 landscape; margin: 12mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: #1e293b;
+    background: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page { width: 100%; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  /* ===== COVER ===== */
+  .cover {
+    height: 186mm;
+    background: linear-gradient(135deg, #0c8a63 0%, #0a6e50 55%, #074d38 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 26mm 22mm;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: "";
+    position: absolute;
+    top: -60mm; right: -40mm;
+    width: 160mm; height: 160mm;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .cover::after {
+    content: "";
+    position: absolute;
+    bottom: -50mm; left: -30mm;
+    width: 120mm; height: 120mm;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .cover-kicker {
+    font-size: 12pt;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    font-weight: 600;
+  }
+  .cover-title {
+    font-size: 58pt;
+    font-weight: 900;
+    line-height: 1.02;
+    margin: 8mm 0;
+    letter-spacing: -1px;
+  }
+  .cover-sub {
+    font-size: 17pt;
+    font-weight: 400;
+    opacity: 0.92;
+    max-width: 160mm;
+    line-height: 1.45;
+  }
+  .cover-line {
+    width: 60mm; height: 3px;
+    background: #6ee7b7;
+    margin: 9mm 0;
+    border: none;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 18mm;
+    font-size: 10.5pt;
+    z-index: 2;
+  }
+  .cover-meta div { line-height: 1.6; }
+  .cover-meta .label {
+    font-size: 8.5pt;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.65;
+    display: block;
+    margin-bottom: 2mm;
+  }
+  .cover-meta .val { font-weight: 600; font-size: 11pt; }
+
+  /* ===== SECTION HEADER ===== */
+  .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 5mm;
+    margin-bottom: 6mm;
+    padding-bottom: 4mm;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .sec-num {
+    background: #0c8a63;
+    color: #fff;
+    font-weight: 800;
+    font-size: 13pt;
+    width: 11mm; height: 11mm;
+    border-radius: 3mm;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sec-titles h1 {
+    font-size: 19pt;
+    color: #0c8a63;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .sec-titles p {
+    font-size: 10pt;
+    color: #64748b;
+    margin-top: 1mm;
+  }
+
+  /* ===== ERD DIAGRAM (entitas + garis) ===== */
+  .erd-canvas {
+    position: relative;
+    width: 100%;
+    height: 200mm;
+  }
+  .entity {
+    position: absolute;
+    width: 64mm;
+    background: #fff;
+    border: 1.5px solid;
+    border-radius: 2.5mm;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    font-size: 7.4pt;
+    z-index: 2;
+  }
+  .entity .e-head {
+    color: #fff;
+    padding: 2mm 3mm;
+    font-weight: 800;
+    font-size: 9pt;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+  }
+  .entity .e-head .ico { font-size: 10pt; }
+  .entity table { width: 100%; border-collapse: collapse; }
+  .entity td {
+    padding: 1.1mm 3mm;
+    border-bottom: 0.5px solid #f1f5f9;
+    vertical-align: top;
+    line-height: 1.3;
+  }
+  .entity td.col { font-weight: 600; color: #334155; width: 60%; }
+  .entity td.typ { color: #94a3b8; text-align: right; font-style: italic; width: 40%; }
+  .entity tr.pk td.col::before {
+    content: "🔑 ";
+    font-size: 7pt;
+  }
+  .entity tr.fk td.col::before {
+    content: "🔗 ";
+    font-size: 7pt;
+  }
+  .badge-enum {
+    display: inline-block;
+    font-size: 6pt;
+    padding: 0.3mm 1.2mm;
+    border-radius: 1mm;
+    background: #fef3c7;
+    color: #92400e;
+    margin-left: 1mm;
+    vertical-align: middle;
+  }
+
+  /* warna entitas */
+  .c-user  { border-color: #2563eb; } .c-user  .e-head { background: #2563eb; }
+  .c-jam   { border-color: #16a34a; } .c-jam   .e-head { background: #16a34a; }
+  .c-pkt   { border-color: #d97706; } .c-pkt   .e-head { background: #d97706; }
+  .c-pen   { border-color: #7c3aed; } .c-pen   .e-head { background: #7c3aed; }
+  .c-byr   { border-color: #db2777; } .c-byr   .e-head { background: #db2777; }
+  .c-not   { border-color: #0d9488; } .c-not   .e-head { background: #0d9488; }
+  .c-vis   { border-color: #475569; } .c-vis   .e-head { background: #475569; }
+
+  /* SVG garis relasi */
+  .erd-canvas svg {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .rel-line { stroke-width: 1.6; fill: none; }
+  .rel-label {
+    font-size: 7pt;
+    font-weight: 700;
+    fill: #475569;
+  }
+  .rel-label-bg {
+    fill: #fff;
+    stroke: #cbd5e1;
+    stroke-width: 0.5;
+    rx: 1.5;
+  }
+
+  /* ===== DETAIL TABEL (full schema) ===== */
+  .schema-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5mm;
+  }
+  .schema-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 2.5mm;
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+  .schema-card .sc-head {
+    padding: 2.5mm 4mm;
+    font-weight: 800;
+    font-size: 10pt;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+  }
+  .schema-card .sc-head .tag {
+    margin-left: auto;
+    font-size: 7.5pt;
+    font-weight: 500;
+    background: rgba(255,255,255,0.25);
+    padding: 0.6mm 2mm;
+    border-radius: 1mm;
+  }
+  .schema-card table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+  .schema-card th {
+    background: #f8fafc;
+    color: #475569;
+    text-align: left;
+    padding: 1.8mm 3mm;
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .schema-card td {
+    padding: 1.6mm 3mm;
+    border-bottom: 0.5px solid #f1f5f9;
+    vertical-align: top;
+  }
+  .schema-card td.fld { font-weight: 600; color: #1e293b; width: 32%; }
+  .schema-card td.ty { color: #64748b; width: 24%; font-family: 'Consolas', monospace; font-size: 7.5pt; }
+  .schema-card td.nk { width: 44%; color: #475569; font-size: 7.5pt; }
+  .key-pk { color: #2563eb; font-weight: 800; }
+  .key-fk { color: #d97706; font-weight: 700; }
+  .key-uk { color: #16a34a; font-weight: 700; }
+
+  /* ===== GENERIC TABLE ===== */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-top: 3mm; }
+  .tbl thead th {
+    background: #0c8a63;
+    color: #fff;
+    padding: 2.5mm 3mm;
+    text-align: left;
+    font-size: 8pt;
+    font-weight: 700;
+  }
+  .tbl tbody td {
+    padding: 2.2mm 3mm;
+    border-bottom: 0.5px solid #e2e8f0;
+    vertical-align: top;
+  }
+  .tbl tbody tr:nth-child(even) td { background: #f8fafc; }
+  .tbl .mono { font-family: 'Consolas', monospace; font-size: 7.8pt; color: #0c8a63; font-weight: 600; }
+  .tbl .method {
+    display: inline-block;
+    font-size: 6.8pt;
+    font-weight: 800;
+    padding: 0.5mm 1.8mm;
+    border-radius: 1mm;
+    color: #fff;
+    min-width: 9mm;
+    text-align: center;
+  }
+  .m-get { background: #2563eb; }
+  .m-post { background: #16a34a; }
+  .m-put { background: #d97706; }
+  .m-del { background: #dc2626; }
+
+  .pill {
+    display: inline-block;
+    font-size: 7pt;
+    padding: 0.6mm 2.2mm;
+    border-radius: 10mm;
+    font-weight: 600;
+  }
+  .pill-admin { background: #ede9fe; color: #6d28d9; }
+  .pill-jam { background: #dcfce7; color: #15803d; }
+  .pill-guest { background: #f1f5f9; color: #475569; }
+  .pill-auth { background: #dbeafe; color: #1d4ed8; }
+
+  /* ===== FLOW DIAGRAM ===== */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 5mm 0;
+  }
+  .flow-node {
+    flex: 1;
+    background: #fff;
+    border: 2px solid #0c8a63;
+    border-radius: 2.5mm;
+    padding: 3mm;
+    text-align: center;
+    position: relative;
+  }
+  .flow-node .fn-title { font-weight: 800; font-size: 9pt; color: #0c8a63; }
+  .flow-node .fn-desc { font-size: 7.2pt; color: #64748b; margin-top: 1mm; line-height: 1.3; }
+  .flow-arrow {
+    display: flex; align-items: center; justify-content: center;
+    width: 8mm;
+    font-size: 14pt;
+    color: #0c8a63;
+    font-weight: 900;
+  }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    display: flex;
+    gap: 6mm;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 2.5mm;
+    padding: 3.5mm 5mm;
+    margin: 4mm 0;
+    font-size: 8pt;
+  }
+  .legend-item { display: flex; align-items: center; gap: 2mm; }
+  .legend-dot { width: 4mm; height: 4mm; border-radius: 1mm; }
+
+  .note {
+    background: #ecfdf5;
+    border-left: 3px solid #0c8a63;
+    padding: 3mm 4mm;
+    border-radius: 0 2mm 2mm 0;
+    font-size: 8.2pt;
+    color: #064e3b;
+    margin: 3mm 0;
+    line-height: 1.5;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 7.5pt;
+    color: #94a3b8;
+    margin-top: 5mm;
+    padding-top: 3mm;
+    border-top: 1px solid #e2e8f0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="page">
+  <div class="cover">
+    <div>
+      <div class="cover-kicker">Entity Relationship Diagram</div>
+      <div class="cover-title">SUTECH<br>SMART UMRAH</div>
+      <hr class="cover-line">
+      <div class="cover-sub">Dokumentasi lengkap struktur database, relasi antar entitas, arsitektur backend, dan struktur frontend sistem manajemen travel Umrah.</div>
+    </div>
+    <div class="cover-meta">
+      <div>
+        <span class="label">Versi</span>
+        <span class="val">1.0</span>
+      </div>
+      <div>
+        <span class="label">Framework</span>
+        <span class="val">Laravel 11</span>
+      </div>
+      <div>
+        <span class="label">Database</span>
+        <span class="val">MySQL / SQLite</span>
+      </div>
+      <div>
+        <span class="label">Total Entitas</span>
+        <span class="val">7 Tabel</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 1. OVERVIEW DIAGRAM ============ -->
+<div class="page">
+  <div class="sec-head">
+    <div class="sec-num">1</div>
+    <div class="sec-titles">
+      <h1>Diagram Relasi Entitas (ERD)</h1>
+      <p>Visualisasi hubungan antar 7 tabel utama beserta kardinalitas</p>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:#2563eb"></span> Users (Akun)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#16a34a"></span> Jamaahs (Profil)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Paket Umrah</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#7c3aed"></span> Pendaftaran</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#db2777"></span> Pembayaran</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#0d9488"></span> Notifikasi</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#475569"></span> Visitors</div>
+  </div>
+
+  <div class="erd-canvas">
+    <!-- SVG relasi -->
+    <svg viewBox="0 0 277 200" preserveAspectRatio="none">
+      <!-- Users(1:1)->Jamaahs -->
+      <path class="rel-line" stroke="#64748b" d="M 64 40 L 107 40"/>
+      <rect class="rel-label-bg" x="74" y="33" width="22" height="6"/>
+      <text class="rel-label" x="85" y="37.5" text-anchor="middle">1 : 1</text>
+      <!-- Users(1:N)->Visitors -->
+      <path class="rel-line" stroke="#64748b" d="M 32 53 C 32 95, 32 95, 32 120"/>
+      <rect class="rel-label-bg" x="35" y="80" width="22" height="6"/>
+      <text class="rel-label" x="46" y="84.5" text-anchor="middle">1 : N</text>
+      <!-- Jamaahs(1:N)->Pendaftaran -->
+      <path class="rel-line" stroke="#64748b" d="M 171 40 C 200 40, 200 78, 200 78"/>
+      <rect class="rel-label-bg" x="185" y="55" width="22" height="6"/>
+      <text class="rel-label" x="196" y="59.5" text-anchor="middle">1 : N</text>
+      <!-- Jamaahs(1:N)->Notifikasi -->
+      <path class="rel-line" stroke="#64748b" d="M 139 53 C 139 95, 139 120, 139 120"/>
+      <rect class="rel-label-bg" x="142" y="80" width="22" height="6"/>
+      <text class="rel-label" x="153" y="84.5" text-anchor="middle">1 : N</text>
+      <!-- Paket(1:N)->Pendaftaran -->
+      <path class="rel-line" stroke="#64748b" d="M 207 53 C 207 65, 232 65, 232 78"/>
+      <rect class="rel-label-bg" x="208" y="60" width="22" height="6"/>
+      <text class="rel-label" x="219" y="64.5" text-anchor="middle">1 : N</text>
+      <!-- Pendaftaran(1:N)->Pembayaran -->
+      <path class="rel-line" stroke="#64748b" d="M 216 105 C 216 135, 160 135, 160 155"/>
+      <rect class="rel-label-bg" x="176" y="128" width="22" height="6"/>
+      <text class="rel-label" x="187" y="132.5" text-anchor="middle">1 : N</text>
+    </svg>
+
+    <!-- USERS (kiri atas) -->
+    <div class="entity c-user" style="left:0; top:25mm;">
+      <div class="e-head"><span class="ico">🔑</span> USERS</div>
+      <table>
+        <tr class="pk"><td class="col">id</td><td class="typ">bigint PK</td></tr>
+        <tr><td class="col">name</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">email</td><td class="typ">varchar UK</td></tr>
+        <tr><td class="col">password</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">role</td><td class="typ">enum</td></tr>
+        <tr><td class="col">phone</td><td class="typ">varchar</td></tr>
+      </table>
+    </div>
+
+    <!-- JAMAAHS (tengah atas) -->
+    <div class="entity c-jam" style="left:107mm; top:25mm;">
+      <div class="e-head"><span class="ico">👤</span> JAMAAHS</div>
+      <table>
+        <tr class="pk"><td class="col">id</td><td class="typ">bigint PK</td></tr>
+        <tr class="fk"><td class="col">user_id</td><td class="typ">FK→users</td></tr>
+        <tr><td class="col">nama</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">nik</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">jenis_kelamin</td><td class="typ">enum</td></tr>
+        <tr><td class="col">status_verifikasi</td><td class="typ">enum</td></tr>
+      </table>
+    </div>
+
+    <!-- PAKET (kanan atas) -->
+    <div class="entity c-pkt" style="left:175mm; top:25mm;">
+      <div class="e-head"><span class="ico">📦</span> PAKET_UMRAHS</div>
+      <table>
+        <tr class="pk"><td class="col">id</td><td class="typ">bigint PK</td></tr>
+        <tr><td class="col">nama</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">tipe</td><td class="typ">enum</td></tr>
+        <tr><td class="col">harga</td><td class="typ">decimal</td></tr>
+        <tr><td class="col">kuota</td><td class="typ">int</td></tr>
+        <tr><td class="col">status</td><td class="typ">varchar</td></tr>
+      </table>
+    </div>
+
+    <!-- VISITORS (kiri bawah) -->
+    <div class="entity c-vis" style="left:0; top:120mm;">
+      <div class="e-head"><span class="ico">👀</span> VISITORS</div>
+      <table>
+        <tr class="pk"><td class="col">id</td><td class="typ">bigint PK</td></tr>
+        <tr class="fk"><td class="col">user_id</td><td class="typ">FK→users</td></tr>
+        <tr><td class="col">ip_address</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">page</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">visited_at</td><td class="typ">date</td></tr>
+      </table>
+    </div>
+
+    <!-- NOTIFIKASI (tengah bawah) -->
+    <div class="entity c-not" style="left:107mm; top:120mm;">
+      <div class="e-head"><span class="ico">🔔</span> NOTIFIKASI_JAMAAH</div>
+      <table>
+        <tr class="pk"><td class="col">id</td><td class="typ">bigint PK</td></tr>
+        <tr class="fk"><td class="col">jamaah_id</td><td class="typ">FK→jamaahs</td></tr>
+        <tr><td class="col">tipe</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">judul</td><td class="typ">varchar</td></tr>
+        <tr><td class="col">terkait_type</td><td class="typ">polymorphic</td></tr>
+        <tr><td class="col">dibaca</td><td class="typ">boolean</td></tr>
+      </table>
+    </div>
+
+    <!-- PENDAFTARAN (kanan-tengah) -->
+    <div class="entity c-pen" style="left:184mm; top:78mm;">
+      <div class="e-head"><span class="ico">📝</span> PENDAFTARANS</div>
+      <table>
+        <tr class="pk"><td class="col">id</td><td class="typ">bigint PK</td></tr>
+        <tr class="fk"><td class="col">jamaah_id</td><td class="typ">FK→jamaahs</td></tr>
+        <tr class="fk"><td class="col">paket_umrah_id</td><td class="typ">FK→paket</td></tr>
+        <tr><td class="col">status</td><td class="typ">enum</td></tr>
+        <tr><td class="col">tanggal</td><td class="typ">date</td></tr>
+      </table>
+    </div>
+
+    <!-- PEMBAYARAN (tengah-bawah kanan) -->
+    <div class="entity c-byr" style="left:128mm; top:155mm;">
+      <div class="e-head"><span class="ico">💰</span> PEMBAYARANS</div>
+      <table>
+        <tr class="pk"><td class="col">id</td><td class="typ">bigint PK</td></tr>
+        <tr class="fk"><td class="col">pendaftaran_id</td><td class="typ">FK→pendaftaran</td></tr>
+        <tr><td class="col">jumlah</td><td class="typ">decimal</td></tr>
+        <tr><td class="col">total</td><td class="typ">decimal</td></tr>
+        <tr><td class="col">status</td><td class="typ">enum</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Rantai Transaksi Utama:</strong> User (1:1) → Jamaah → Pendaftaran → Pembayaran.
+    Tabel <strong>Pendaftaran</strong> adalah <em>junction</em> yang menghubungkan Jamaah dengan Paket Umrah.
+    Tabel <strong>Notifikasi</strong> memiliki referensi polimorfik (terkait_type + terkait_id) yang dapat menunjuk ke model apa pun.
+  </div>
+</div>
+
+<!-- ============ 2. RINCIAN TABEL ============ -->
+<div class="page">
+  <div class="sec-head">
+    <div class="sec-num">2</div>
+    <div class="sec-titles">
+      <h1>Rincian Struktur Tabel (Bagian 1)</h1>
+      <p>Detail kolom, tipe data, dan constraint tiap entitas</p>
+    </div>
+  </div>
+
+  <div class="schema-grid">
+    <!-- USERS -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#2563eb">🔑 users <span class="tag">Akun Login</span></div>
+      <table>
+        <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td class="fld"><span class="key-pk">PK</span> id</td><td class="ty">bigint</td><td class="nk">Auto increment</td></tr>
+          <tr><td class="fld">name</td><td class="ty">varchar</td><td class="nk">Nama lengkap</td></tr>
+          <tr><td class="fld"><span class="key-uk">UK</span> email</td><td class="ty">varchar</td><td class="nk">Unik, untuk login</td></tr>
+          <tr><td class="fld">password</td><td class="ty">varchar</td><td class="nk">Hashed (bcrypt)</td></tr>
+          <tr><td class="fld">role</td><td class="ty">enum</td><td class="nk">admin / jamaah</td></tr>
+          <tr><td class="fld">phone</td><td class="ty">varchar</td><td class="nk">No. telepon</td></tr>
+          <tr><td class="fld">email_verified_at</td><td class="ty">timestamp</td><td class="nk">Nullable</td></tr>
+          <tr><td class="fld">remember_token</td><td class="ty">varchar</td><td class="nk">Session</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- JAMAAHS -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#16a34a">👤 jamaahs <span class="tag">Profil Jamaah</span></div>
+      <table>
+        <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td class="fld"><span class="key-pk">PK</span> id</td><td class="ty">bigint</td><td class="nk">Auto increment</td></tr>
+          <tr><td class="fld"><span class="key-fk">FK</span> user_id</td><td class="ty">foreignId</td><td class="nk">→ users.id (cascade)</td></tr>
+          <tr><td class="fld">nama</td><td class="ty">varchar</td><td class="nk">Nama jamaah</td></tr>
+          <tr><td class="fld">nik</td><td class="ty">varchar</td><td class="nk">No. KTP</td></tr>
+          <tr><td class="fld">tempat_lahir</td><td class="ty">varchar</td><td class="nk">Nullable</td></tr>
+          <tr><td class="fld">tanggal_lahir</td><td class="ty">date</td><td class="nk">Cast: date</td></tr>
+          <tr><td class="fld">jenis_kelamin</td><td class="ty">enum</td><td class="nk">laki-laki / perempuan</td></tr>
+          <tr><td class="fld">pasport</td><td class="ty">varchar</td><td class="nk">No. paspor</td></tr>
+          <tr><td class="fld">alamat</td><td class="ty">text</td><td class="nk">Nullable</td></tr>
+          <tr><td class="fld">foto_ktp</td><td class="ty">varchar</td><td class="nk">Path upload</td></tr>
+          <tr><td class="fld">status_verifikasi</td><td class="ty">enum</td><td class="nk">belum / terverifikasi / ditolak</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAKET UMRAHS -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#d97706">📦 paket_umrahs <span class="tag">Paket Travel</span></div>
+      <table>
+        <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td class="fld"><span class="key-pk">PK</span> id</td><td class="ty">bigint</td><td class="nk">Auto increment</td></tr>
+          <tr><td class="fld">nama</td><td class="ty">varchar</td><td class="nk">Nama paket</td></tr>
+          <tr><td class="fld">tipe</td><td class="ty">varchar</td><td class="nk">reguler / plus / vip</td></tr>
+          <tr><td class="fld">harga</td><td class="ty">decimal(15,2)</td><td class="nk">Cast: decimal:2</td></tr>
+          <tr><td class="fld">durasi</td><td class="ty">integer</td><td class="nk">Jumlah hari</td></tr>
+          <tr><td class="fld">kuota</td><td class="ty">integer</td><td class="nk">NULL = tak terbatas</td></tr>
+          <tr><td class="fld">hotel</td><td class="ty">varchar</td><td class="nk">Nullable</td></tr>
+          <tr><td class="fld">maskapai</td><td class="ty">varchar</td><td class="nk">Nullable</td></tr>
+          <tr><td class="fld">fasilitas</td><td class="ty">json</td><td class="nk">Cast: array</td></tr>
+          <tr><td class="fld">itinerary</td><td class="ty">json</td><td class="nk">Cast: array</td></tr>
+          <tr><td class="fld">status</td><td class="ty">varchar</td><td class="nk">aktif / nonaktif</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PENDAFTARANS -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#7c3aed">📝 pendaftarans <span class="tag">Junction</span></div>
+      <table>
+        <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td class="fld"><span class="key-pk">PK</span> id</td><td class="ty">bigint</td><td class="nk">Auto increment</td></tr>
+          <tr><td class="fld"><span class="key-fk">FK</span> jamaah_id</td><td class="ty">foreignId</td><td class="nk">→ jamaahs.id (cascade)</td></tr>
+          <tr><td class="fld"><span class="key-fk">FK</span> paket_umrah_id</td><td class="ty">foreignId</td><td class="nk">→ paket_umrahs.id</td></tr>
+          <tr><td class="fld">tanggal_pendaftaran</td><td class="ty">date</td><td class="nk">Cast: date</td></tr>
+          <tr><td class="fld">status</td><td class="ty">enum</td><td class="nk">draft / pending / aktif / selesai / batal</td></tr>
+          <tr><td class="fld">catatan</td><td class="ty">text</td><td class="nk">Nullable</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer-note">ERD Sutech Smart Umrah — Halaman 3 / 7</div>
+</div>
+
+<!-- ============ 2b. RINCIAN TABEL (lanjutan) ============ -->
+<div class="page">
+  <div class="sec-head">
+    <div class="sec-num">2</div>
+    <div class="sec-titles">
+      <h1>Rincian Struktur Tabel (Bagian 2)</h1>
+      <p>Entitas pembayaran, notifikasi, dan pelacak kunjungan</p>
+    </div>
+  </div>
+
+  <div class="schema-grid">
+    <!-- PEMBAYARANS -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#db2777">💰 pembayarans <span class="tag">Transaksi</span></div>
+      <table>
+        <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td class="fld"><span class="key-pk">PK</span> id</td><td class="ty">bigint</td><td class="nk">Auto increment</td></tr>
+          <tr><td class="fld"><span class="key-fk">FK</span> pendaftaran_id</td><td class="ty">foreignId</td><td class="nk">→ pendaftarans.id</td></tr>
+          <tr><td class="fld">metode</td><td class="ty">varchar</td><td class="nk">BCA / BNI VA / E-Wallet</td></tr>
+          <tr><td class="fld">jumlah</td><td class="ty">decimal(15,2)</td><td class="nk">Harga paket</td></tr>
+          <tr><td class="fld">biaya_admin</td><td class="ty">decimal(15,2)</td><td class="nk">Default Rp 250.000</td></tr>
+          <tr><td class="fld">total</td><td class="ty">decimal(15,2)</td><td class="nk">jumlah + biaya_admin</td></tr>
+          <tr><td class="fld">bukti_pembayaran</td><td class="ty">varchar</td><td class="nk">Path upload bukti</td></tr>
+          <tr><td class="fld">tanggal_bayar</td><td class="ty">date</td><td class="nk">Cast: date</td></tr>
+          <tr><td class="fld">status</td><td class="ty">enum</td><td class="nk">menunggu / terverifikasi / ditolak</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- NOTIFIKASI JAMAAH -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#0d9488">🔔 notifikasi_jamaah <span class="tag">Notif</span></div>
+      <table>
+        <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td class="fld"><span class="key-pk">PK</span> id</td><td class="ty">bigint</td><td class="nk">Auto increment</td></tr>
+          <tr><td class="fld"><span class="key-fk">FK</span> jamaah_id</td><td class="ty">foreignId</td><td class="nk">→ jamaahs.id</td></tr>
+          <tr><td class="fld">tipe</td><td class="ty">varchar</td><td class="nk">penolakan_pembayaran / verifikasi</td></tr>
+          <tr><td class="fld">judul</td><td class="ty">varchar</td><td class="nk">Judul notif</td></tr>
+          <tr><td class="fld">pesan</td><td class="ty">text</td><td class="nk">Isi / alasan</td></tr>
+          <tr><td class="fld">terkait_type</td><td class="ty">varchar</td><td class="nk">Class model (polymorphic)</td></tr>
+          <tr><td class="fld">terkait_id</td><td class="ty">bigint</td><td class="nk">ID model terkait</td></tr>
+          <tr><td class="fld">dibaca</td><td class="ty">boolean</td><td class="nk">Default false</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- VISITORS -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#475569">👀 visitors <span class="tag">Analytics</span></div>
+      <table>
+        <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td class="fld"><span class="key-pk">PK</span> id</td><td class="ty">bigint</td><td class="nk">Auto increment</td></tr>
+          <tr><td class="fld"><span class="key-fk">FK</span> user_id</td><td class="ty">foreignId</td><td class="nk">→ users.id (set null)</td></tr>
+          <tr><td class="fld">ip_address</td><td class="ty">varchar(45)</td><td class="nk">IPv4/IPv6</td></tr>
+          <tr><td class="fld">page</td><td class="ty">varchar</td><td class="nk">Path halaman</td></tr>
+          <tr><td class="fld">user_agent</td><td class="ty">varchar</td><td class="nk">Browser info</td></tr>
+          <tr><td class="fld">visited_at</td><td class="ty">date</td><td class="nk">Tanggal kunjungan</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RELATIONSHIP SUMMARY -->
+    <div class="schema-card">
+      <div class="sc-head" style="background:#0c8a63">🔗 Ringkasan Relasi</div>
+      <table>
+        <thead><tr><th>Induk</th><th>Anak</th><th>Card</th><th>On Delete</th></tr></thead>
+        <tbody>
+          <tr><td class="fld">users</td><td class="ty">jamaahs</td><td class="nk">1 : 1</td><td class="nk">CASCADE</td></tr>
+          <tr><td class="fld">users</td><td class="ty">visitors</td><td class="nk">1 : N</td><td class="nk">SET NULL</td></tr>
+          <tr><td class="fld">jamaahs</td><td class="ty">pendaftarans</td><td class="nk">1 : N</td><td class="nk">CASCADE</td></tr>
+          <tr><td class="fld">paket_umrahs</td><td class="ty">pendaftarans</td><td class="nk">1 : N</td><td class="nk">CASCADE</td></tr>
+          <tr><td class="fld">pendaftarans</td><td class="ty">pembayarans</td><td class="nk">1 : N</td><td class="nk">CASCADE</td></tr>
+          <tr><td class="fld">jamaahs</td><td class="ty">notifikasi</td><td class="nk">1 : N</td><td class="nk">CASCADE</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer-note">ERD Sutech Smart Umrah — Halaman 4 / 7</div>
+</div>
+
+<!-- ============ 3. ALUR BISNIS ============ -->
+<div class="page">
+  <div class="sec-head">
+    <div class="sec-num">3</div>
+    <div class="sec-titles">
+      <h1>Alur Bisnis & Arsitektur</h1>
+      <p>Flow transaksi dan alur kerja sistem</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:11pt;color:#0c8a63;margin:5mm 0 2mm;">A. Alur Transaksi Jamaah</h3>
+  <div class="flow">
+    <div class="flow-node">
+      <div class="fn-title">1. Register</div>
+      <div class="fn-desc">Buat akun User<br>→ profil Jamaah</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-title">2. Pilih Paket</div>
+      <div class="fn-desc">Lihat PaketUmrah<br>ceck kuota tersedia</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-title">3. Daftar</div>
+      <div class="fn-desc">Isi data diri<br>buat Pendaftaran</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-title">4. Bayar</div>
+      <div class="fn-desc">Upload bukti<br>buat Pembayaran</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-title">5. Verifikasi</div>
+      <div class="fn-desc">Admin validasi<br>status aktif</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:11pt;color:#0c8a63;margin:7mm 0 2mm;">B. Status State Machine — Pendaftaran</h3>
+  <div class="flow">
+    <div class="flow-node" style="border-color:#94a3b8;">
+      <div class="fn-title" style="color:#64748b;">draft</div>
+      <div class="fn-desc">Belum submit<br>(disimpan di session)</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:#d97706;">
+      <div class="fn-title" style="color:#d97706;">pending</div>
+      <div class="fn-desc">Menunggu<br>konfirmasi bayar</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:#2563eb;">
+      <div class="fn-title" style="color:#2563eb;">aktif</div>
+      <div class="fn-desc">Pembayaran<br>terverifikasi</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:#16a34a;">
+      <div class="fn-title" style="color:#16a34a;">selesai</div>
+      <div class="fn-desc">Perjalanan<br>umrah selesai</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:#dc2626;">
+      <div class="fn-title" style="color:#dc2626;">batal</div>
+      <div class="fn-desc">Dibatalkan<br>(+ notifikasi)</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:11pt;color:#0c8a63;margin:7mm 0 2mm;">C. Arsitektur Sistem (MVC)</h3>
+  <table class="tbl">
+    <thead>
+      <tr><th style="width:18%">Lapisan</th><th style="width:32%">Komponen</th><th>Responsabilitas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Frontend</strong></td><td>Blade Templates + Bootstrap 5</td><td>22 file view: welcome, dashboard, auth, admin panel, invoice PDF</td></tr>
+      <tr><td><strong>Routing</strong></td><td>routes/web.php</td><td>3 grup: Public, Jamaah (auth), Admin (auth+admin)</td></tr>
+      <tr><td><strong>Middleware</strong></td><td>EnsureUserIsAdmin, EnsureUserIsJamaah, TrackVisitor</td><td>Otorisasi role + tracking pengunjung harian</td></tr>
+      <tr><td><strong>Controller</strong></td><td>15 Controller (Admin, Jamaah, Auth)</td><td>Logika CRUD + verifikasi + export</td></tr>
+      <tr><td><strong>Model</strong></td><td>7 Eloquent Model</td><td>users, jamaahs, paket_umrahs, pendaftarans, pembayarans, notifikasi, visitors</td></tr>
+      <tr><td><strong>Database</strong></td><td>MySQL / SQLite + 10 migration</td><td>Foreign key cascade, enum status, JSON field</td></tr>
+      <tr><td><strong>Ekspor</strong></td><td>Dompdf + Maatwebsite Excel</td><td>Invoice PDF + laporan Excel pembayaran</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:11pt;color:#0c8a63;margin:7mm 0 2mm;">D. Role & Otorisasi</h3>
+  <div class="legend">
+    <div class="legend-item"><span class="pill pill-admin">ADMIN</span> Kelola paket, verifikasi jamaah, kelola pembayaran, export laporan</div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><span class="pill pill-jam">JAMAAH</span> Daftar paket, upload dokumen, bayar, lihat status & invoice</div>
+  </div>
+
+  <div class="footer-note">ERD Sutech Smart Umrah — Halaman 5 / 7</div>
+</div>
+
+<!-- ============ 4. ROUTES & CONTROLLER ============ -->
+<div class="page">
+  <div class="sec-head">
+    <div class="sec-num">4</div>
+    <div class="sec-titles">
+      <h1>Routes & Controller (Backend)</h1>
+      <p>Daftar lengkap endpoint API aplikasi</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:10.5pt;color:#0c8a63;margin:3mm 0;"><span class="pill pill-admin">ADMIN</span> &nbsp; Grup /admin (auth + admin middleware)</h3>
+  <table class="tbl">
+    <thead><tr><th style="width:7%">Method</th><th style="width:32%">URI</th><th style="width:33%">Controller</th><th>Fungsi</th></tr></thead>
+    <tbody>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/dashboard</td><td>DashboardController@index</td><td>Statistik agregat</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/jamaah</td><td>JamaahController@index</td><td>Daftar + cari jamaah</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/jamaah/{id}</td><td>JamaahController@show</td><td>Detail jamaah</td></tr>
+      <tr><td><span class="method m-put">PUT</span></td><td class="mono">/admin/jamaah/{id}</td><td>JamaahController@update</td><td>Edit data jamaah</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/admin/jamaah/{id}/verify</td><td>JamaahController@verify</td><td>Verifikasi / tolak</td></tr>
+      <tr><td><span class="method m-del">DEL</span></td><td class="mono">/admin/jamaah/{id}</td><td>JamaahController@destroy</td><td>Hapus jamaah</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/belum-verifikasi</td><td>JamaahController@belumVerifikasi</td><td>Antrian verifikasi</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/paket</td><td>PaketController@index</td><td>Kelola paket</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/admin/paket</td><td>PaketController@store</td><td>Tambah paket</td></tr>
+      <tr><td><span class="method m-put">PUT</span></td><td class="mono">/admin/paket/{id}</td><td>PaketController@update</td><td>Edit paket</td></tr>
+      <tr><td><span class="method m-del">DEL</span></td><td class="mono">/admin/paket/{id}</td><td>PaketController@destroy</td><td>Hapus paket</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/pendaftaran</td><td>PendaftaranController@index</td><td>Daftar pendaftaran</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/admin/pendaftaran/{id}/status</td><td>PendaftaranController@updateStatus</td><td>Ubah status</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/pembayaran</td><td>PembayaranController@index</td><td>Kelola pembayaran</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/admin/pembayaran/{id}/status</td><td>PembayaranController@updateStatus</td><td>Verifikasi / tolak bayar</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/pembayaran/export</td><td>PembayaranController@export</td><td>Export Excel</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/admin/pembayaran/{id}/invoice</td><td>PembayaranController@invoice</td><td>Cetak invoice PDF</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:10.5pt;color:#0c8a63;margin:5mm 0 2mm;"><span class="pill pill-jam">JAMAAH</span> &nbsp; Grup publik (auth + jamaah middleware)</h3>
+  <table class="tbl">
+    <thead><tr><th style="width:7%">Method</th><th style="width:32%">URI</th><th style="width:33%">Controller</th><th>Fungsi</th></tr></thead>
+    <tbody>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/dashboard</td><td>DashboardController@index</td><td>Dashboard jamaah</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/paket/{id}</td><td>PaketController@show</td><td>Detail paket</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/pendaftaran/{id}</td><td>PendaftaranController@show</td><td>Form pendaftaran</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/pendaftaran/{id}/draft</td><td>PendaftaranController@draft</td><td>Simpan draft</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/pendaftaran/{id}/submit</td><td>PendaftaranController@submit</td><td>Submit pendaftaran</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/pembayaran/{id}</td><td>PembayaranController@show</td><td>Halaman bayar</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/pembayaran/{id}/confirm</td><td>PembayaranController@confirm</td><td>Konfirmasi bayar</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/pembayaran/{id}/status/{p}</td><td>PembayaranController@status</td><td>Status pembayaran</td></tr>
+      <tr><td><span class="method m-get">GET</span></td><td class="mono">/pembayaran/{id}/invoice/{p}</td><td>PembayaranController@invoice</td><td>Unduh invoice</td></tr>
+      <tr><td><span class="method m-post">POST</span></td><td class="mono">/notifikasi/{id}/baca</td><td>DashboardController@tandaiDibaca</td><td>Tandai notif dibaca</td></tr>
+    </tbody>
+  </table>
+  <div class="footer-note">ERD Sutech Smart Umrah — Halaman 6 / 7</div>
+</div>
+
+<!-- ============ 5. FRONTEND VIEWS ============ -->
+<div class="page">
+  <div class="sec-head">
+    <div class="sec-num">5</div>
+    <div class="sec-titles">
+      <h1>Struktur Frontend (Views)</h1>
+      <p>22 file Blade template — pembagian modul</p>
+    </div>
+  </div>
+
+  <div class="schema-grid">
+    <div class="schema-card">
+      <div class="sc-head" style="background:#0c8a63">🌐 Public & Auth</div>
+      <table>
+        <thead><tr><th>View</th><th>Fungsi</th></tr></thead>
+        <tbody>
+          <tr><td class="fld">welcome.blade</td><td class="nk">Landing page + paket + testimoni</td></tr>
+          <tr><td class="fld">auth/login</td><td class="nk">Form login + demo creds</td></tr>
+          <tr><td class="fld">auth/register</td><td class="nk">Form registrasi jamaah</td></tr>
+          <tr><td class="fld">auth/forgot-password</td><td class="nk">Request OTP reset</td></tr>
+          <tr><td class="fld">auth/verify-otp</td><td class="nk">Input 4-digit OTP</td></tr>
+          <tr><td class="fld">auth/new-password</td><td class="nk">Set password baru</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-card">
+      <div class="sc-head" style="background:#16a34a">👤 Jamaah Panel</div>
+      <table>
+        <thead><tr><th>View</th><th>Fungsi</th></tr></thead>
+        <tbody>
+          <tr><td class="fld">dashboard.blade</td><td class="nk">Dashboard + notif + riwayat</td></tr>
+          <tr><td class="fld">paket-detail</td><td class="nk">Detail paket + itinerary</td></tr>
+          <tr><td class="fld">pendaftaran.blade</td><td class="nk">Form data diri + upload</td></tr>
+          <tr><td class="fld">pembayaran.blade</td><td class="nk">Pilih metode + upload bukti</td></tr>
+          <tr><td class="fld">status-pembayaran</td><td class="nk">Status + alasan penolakan</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-card">
+      <div class="sc-head" style="background:#6d28d9">🛡️ Admin Panel</div>
+      <table>
+        <thead><tr><th>View</th><th>Fungsi</th></tr></thead>
+        <tbody>
+          <tr><td class="fld">admin/dashboard</td><td class="nk">Statistik + revenue</td></tr>
+          <tr><td class="fld">admin/jamaah</td><td class="nk">Tabel + cari jamaah</td></tr>
+          <tr><td class="fld">admin/jamaah-detail</td><td class="nk">Detail + verifikasi + dokumen</td></tr>
+          <tr><td class="fld">admin/belum-verifikasi</td><td class="nk">Antrian verifikasi</td></tr>
+          <tr><td class="fld">admin/paket</td><td class="nk">CRUD paket + modal</td></tr>
+          <tr><td class="fld">admin/pendaftaran</td><td class="nk">Kelola status pendaftaran</td></tr>
+          <tr><td class="fld">admin/pembayaran</td><td class="nk">Verifikasi + export + invoice</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-card">
+      <div class="sc-head" style="background:#475569">🧩 Layout & Komponen</div>
+      <table>
+        <thead><tr><th>View</th><th>Fungsi</th></tr></thead>
+        <tbody>
+          <tr><td class="fld">layouts/admin</td><td class="nk">Sidebar + navbar admin</td></tr>
+          <tr><td class="fld">layouts/jamaah</td><td class="nk">Sidebar + navbar jamaah</td></tr>
+          <tr><td class="fld">partials/navbar</td><td class="nk">Navbar publik (welcome)</td></tr>
+          <tr><td class="fld">exports/invoice</td><td class="nk">Template invoice PDF A4</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="font-size:11pt;color:#0c8a63;margin:6mm 0 2mm;">Tech Stack Frontend</h3>
+  <table class="tbl">
+    <thead><tr><th style="width:25%">Teknologi</th><th style="width:20%">Versi</th><th>Penjelasan</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bootstrap</strong></td><td>5.3.3</td><td>Framework CSS utama (grid, card, modal, dropdown)</td></tr>
+      <tr><td><strong>Font Awesome</strong></td><td>6.5.2</td><td>Icon set (icons di sidebar, button, status)</td></tr>
+      <tr><td><strong>Blade Templating</strong></td><td>Laravel native</td><td>Engine view: @foreach, @if, @auth, @yield, @include</td></tr>
+      <tr><td><strong>Vanilla JS</strong></td><td>—</td><td>Toggle sidebar, OTP auto-advance, animated counter</td></tr>
+      <tr><td><strong>Brand Color</strong></td><td>#0c8a63</td><td>Hijau Smart Umrah (primary theme)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer-note">ERD Sutech Smart Umrah — Dokumentasi Lengkap · Versi 1.0 · 7 Entitas · 15 Controller · 22 Views</div>
+</div>
+
+</body>
+</html>

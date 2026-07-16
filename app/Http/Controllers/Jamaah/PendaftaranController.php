@@ -13,6 +13,25 @@ use Illuminate\Support\Facades\Storage;
 class PendaftaranController extends Controller
 {
     /**
+     * Tampilkan riwayat/status pendaftaran jamaah.
+     */
+    public function index()
+    {
+        $user = Auth::user();
+        $jamaah = $user->jamaah;
+
+        $riwayat = $jamaah
+            ? $jamaah->pendaftarans()->with('paketUmrah', 'pembayaranTerakhir')->latest()->get()
+            : collect();
+
+        return view('riwayat-pendaftaran', [
+            'user' => $user,
+            'jamaah' => $jamaah,
+            'riwayat' => $riwayat,
+        ]);
+    }
+
+    /**
      * Tampilkan form pendaftaran untuk paket tertentu.
      */
     public function show($id)
@@ -69,6 +88,12 @@ class PendaftaranController extends Controller
     {
         $paket = PaketUmrah::where('status', 'aktif')->findOrFail($id);
         $user = Auth::user();
+
+        // Cek kuota — tolak jika paket sudah penuh.
+        if ($paket->kuota_penuh) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Maaf, kuota paket "' . $paket->nama . '" sudah penuh.');
+        }
 
         $validated = $request->validate([
             'fullName' => ['required', 'string', 'max:255'],

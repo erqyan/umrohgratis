@@ -46,6 +46,7 @@
                         <th>Nama</th>
                         <th>Kontak</th>
                         <th>NIK</th>
+                        <th>Dokumen</th>
                         <th>Paket</th>
                         <th>Status</th>
                         <th>Aksi</th>
@@ -57,7 +58,11 @@
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 36px; height: 36px; border-radius: 10px; background: #dff7ec; color: #0c8a63; display: grid; place-items: center; font-weight: 700; font-size: 0.85rem;">{{ $item->inisial }}</div>
+                                    @if($item->foto)
+                                        <img src="{{ asset('storage/' . $item->foto) }}" alt="Profil" style="width: 36px; height: 36px; border-radius: 10px; object-fit: cover;">
+                                    @else
+                                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #dff7ec; color: #0c8a63; display: grid; place-items: center; font-weight: 700; font-size: 0.85rem;">{{ $item->inisial }}</div>
+                                    @endif
                                     <div>
                                         <strong>{{ $item->nama }}</strong><br>
                                         <small style="color: #9ca9a2;">{{ $item->created_at->format('d M Y') }}</small>
@@ -69,6 +74,15 @@
                                 <div style="font-size: 0.85rem;"><i class="fas fa-phone text-muted"></i> {{ $item->telepon ?? '-' }}</div>
                             </td>
                             <td style="font-size: 0.85rem;">{{ $item->nik ?? '-' }}</td>
+                            <td>
+                                @if($item->dokumen_lengkap)
+                                    <span class="badge-soft-green" title="Semua dokumen lengkap"><i class="fas fa-check-circle"></i> Lengkap (3/3)</span>
+                                @elseif($item->jumlah_dokumen > 0)
+                                    <span class="badge-soft-yellow" title="Dokumen belum lengkap"><i class="fas fa-circle-half-stroke"></i> {{ $item->jumlah_dokumen }}/3</span>
+                                @else
+                                    <span class="badge-soft-red" title="Belum ada dokumen"><i class="fas fa-times-circle"></i> Kosong</span>
+                                @endif
+                            </td>
                             <td>{{ $paket->nama ?? '-' }}</td>
                             <td>
                                 @if($item->status_verifikasi === 'terverifikasi')
@@ -84,7 +98,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7d8d83;">Tidak ada data jamaah.</td></tr>
+                        <tr><td colspan="7" style="text-align: center; padding: 40px; color: #7d8d83;">Tidak ada data jamaah.</td></tr>
                     @endforelse
                 </tbody>
             </table>

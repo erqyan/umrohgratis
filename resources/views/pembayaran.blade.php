@@ -66,20 +66,16 @@
                 <div style="margin-bottom: 24px;">
                     <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px;">Metode Pembayaran</h3>
                     <div style="display: grid; gap: 12px;">
-                        <label class="d-flex align-items-center gap-3 p-3" style="border: 2px solid #0c8a63; border-radius: 14px; cursor: pointer; background: #f2fbf5;">
-                            <input type="radio" name="payment_method" value="Transfer Bank BCA" checked class="form-check-input" style="accent-color: #0c8a63;">
-                            <div style="width: 44px; height: 44px; background: #f3faf4; border-radius: 12px; display: grid; place-items: center; color: #0c8a63; font-size: 1.1rem;"><i class="fa-solid fa-university"></i></div>
-                            <div><strong>Transfer Bank BCA</strong><br><small style="color: #5f6a61;">No. Rek 123 456 7890 - Smart Umrah Travel</small></div>
-                        </label>
-                        <label class="d-flex align-items-center gap-3 p-3" style="border: 1px solid #e8eee9; border-radius: 14px; cursor: pointer;">
-                            <input type="radio" name="payment_method" value="Virtual Account BNI" class="form-check-input" style="accent-color: #0c8a63;">
-                            <div style="width: 44px; height: 44px; background: #f3faf4; border-radius: 12px; display: grid; place-items: center; color: #0c8a63; font-size: 1.1rem;"><i class="fa-solid fa-credit-card"></i></div>
-                            <div><strong>Virtual Account BNI</strong><br><small style="color: #5f6a61;">Bayar otomatis via Virtual Account</small></div>
-                        </label>
-                        <label class="d-flex align-items-center gap-3 p-3" style="border: 1px solid #e8eee9; border-radius: 14px; cursor: pointer;">
-                            <input type="radio" name="payment_method" value="E-Wallet (OVO/Dana/GoPay)" class="form-check-input" style="accent-color: #0c8a63;">
-                            <div style="width: 44px; height: 44px; background: #f3faf4; border-radius: 12px; display: grid; place-items: center; color: #0c8a63; font-size: 1.1rem;"><i class="fa-solid fa-wallet"></i></div>
-                            <div><strong>E-Wallet</strong><br><small style="color: #5f6a61;">OVO / Dana / GoPay</small></div>
+                        <label class="d-flex align-items-center gap-4 p-3" style="border: 2px solid #0c8a63; border-radius: 14px; background: #f2fbf5; cursor: pointer;">
+                            <input type="radio" name="payment_method" value="Transfer Bank BNI" checked class="form-check-input d-none">
+                            <div style="width: 64px; height: 64px; background: #fff; border-radius: 12px; display: grid; place-items: center; border: 1px solid #e8eee9; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <img src="{{ asset('images/bni-logo.jpg') }}" alt="BNI Logo" style="width: 54px; height: auto; object-fit: contain;">
+                            </div>
+                            <div>
+                                <strong style="font-size: 1.1rem; color: #1b1b18;">Bank BNI</strong><br>
+                                <strong style="font-size: 1.15rem; color: #0c8a63; letter-spacing: 1.5px;">1100150079</strong><br>
+                                <span style="font-size: 0.85rem; color: #5f6a61;">a.n Khotimah Ahmad Tour dan Travel</span>
+                            </div>
                         </label>
                     </div>
                 </div>

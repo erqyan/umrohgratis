@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PaketUmrah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PaketController extends Controller
 {
@@ -15,7 +16,7 @@ class PaketController extends Controller
     {
         $search = $request->query('q', '');
 
-        $query = PaketUmrah::query();
+        $query = PaketUmrah::query()->withCount('pendaftaranKuota as pendaftaran_kuota_count');
 
         if ($search) {
             $query->where('nama', 'like', "%{$search}%")
@@ -39,16 +40,23 @@ class PaketController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'tipe' => ['required', 'in:reguler,plus,vip'],
             'deskripsi' => ['nullable', 'string'],
-            'harga' => ['required', 'numeric', 'min:0'],
+            'harga' => ['required', 'numeric', 'min:1'],
             'durasi' => ['required', 'integer', 'min:1'],
+            'kuota' => ['nullable', 'integer', 'min:1'],
             'hotel' => ['nullable', 'string', 'max:255'],
             'maskapai' => ['nullable', 'string', 'max:255'],
-            'tanggal_berangkat' => ['nullable', 'string'],
+            'tanggal_berangkat' => ['nullable', 'date', 'after_or_equal:today'],
             'lokasi_keberangkatan' => ['nullable', 'string'],
             'status' => ['required', 'in:aktif,nonaktif'],
             'fasilitas' => ['nullable', 'string'],
             'itinerary' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
+
+        // Upload gambar.
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('paket-umrah', 'public');
+        }
 
         // Parse fasilitas & itinerary dari textarea (baris baru) ke array.
         if (! empty($validated['fasilitas'])) {
@@ -87,14 +95,16 @@ class PaketController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'tipe' => ['required', 'in:reguler,plus,vip'],
             'deskripsi' => ['nullable', 'string'],
-            'harga' => ['required', 'numeric', 'min:0'],
+            'harga' => ['required', 'numeric', 'min:1'],
             'durasi' => ['required', 'integer', 'min:1'],
+            'kuota' => ['nullable', 'integer', 'min:1'],
             'hotel' => ['nullable', 'string', 'max:255'],
             'maskapai' => ['nullable', 'string', 'max:255'],
-            'tanggal_berangkat' => ['nullable', 'string'],
+            'tanggal_berangkat' => ['nullable', 'date', 'after_or_equal:today'],
             'lokasi_keberangkatan' => ['nullable', 'string'],
             'status' => ['required', 'in:aktif,nonaktif'],
             'fasilitas' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         if (! empty($validated['fasilitas'])) {
@@ -103,6 +113,23 @@ class PaketController extends Controller
             ));
         } else {
             $validated['fasilitas'] = null;
+        }
+
+        // Kuota kosong = tidak terbatas (null).
+        $validated['kuota'] = $validated['kuota'] ?? null;
+
+        // Upload gambar baru, hapus lama jika ada.
+        if ($request->hasFile('image')) {
+            if ($paket->image && Storage::disk('public')->exists($paket->image)) {
+                Storage::disk('public')->delete($paket->image);
+            }
+            $validated['image'] = $request->file('image')->store('paket-umrah', 'public');
+        } elseif ($request->boolean('remove_image')) {
+            // Hapus gambar lama tanpa mengganti.
+            if ($paket->image && Storage::disk('public')->exists($paket->image)) {
+                Storage::disk('public')->delete($paket->image);
+            }
+            $validated['image'] = null;
         }
 
         $paket->update($validated);

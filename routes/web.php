@@ -14,6 +14,8 @@ use App\Http\Controllers\Jamaah\DashboardController;
 use App\Http\Controllers\Jamaah\PaketController;
 use App\Http\Controllers\Jamaah\PembayaranController;
 use App\Http\Controllers\Jamaah\PendaftaranController;
+use App\Http\Controllers\Jamaah\ProfileController;
+use App\Models\Visitor;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,12 +26,23 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $pakets = \App\Models\PaketUmrah::where('status', 'aktif')
+        ->withCount('pendaftaranKuota as pendaftaran_kuota_count')
         ->orderBy('harga')
-        ->take(3)
-        ->get();
+        ->get()
+        ->filter(fn ($p) => $p->kuota === null || $p->kuota_terpakai < $p->kuota)
+        ->take(3);
 
-    return view('welcome', ['pakets' => $pakets]);
-})->name('home');
+    $totalVisitors = Visitor::count();
+    $jamaahCount = \App\Models\Jamaah::count();
+    $kloterCount = \App\Models\PaketUmrah::count();
+
+    return view('welcome', [
+        'pakets' => $pakets,
+        'totalVisitors' => $totalVisitors,
+        'jamaahCount' => $jamaahCount,
+        'kloterCount' => $kloterCount,
+    ]);
+})->middleware('visitor')->name('home');
 
 /*
 |--------------------------------------------------------------------------
@@ -82,10 +95,12 @@ Route::middleware(['auth', 'jamaah'])->group(function () {
     // Dashboard jamaah
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Detail paket
+    // Paket Umrah
+    Route::get('/paket', [PaketController::class, 'index'])->name('paket.index');
     Route::get('/paket/{id}', [PaketController::class, 'show'])->name('paket.detail');
 
     // Pendaftaran
+    Route::get('/status-pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
     Route::get('/pendaftaran/{id}', [PendaftaranController::class, 'show'])->name('pendaftaran.show');
     Route::post('/pendaftaran/{id}/draft', [PendaftaranController::class, 'draft'])->name('pendaftaran.draft');
     Route::post('/pendaftaran/{id}/submit', [PendaftaranController::class, 'submit'])->name('pendaftaran.submit');
@@ -95,6 +110,13 @@ Route::middleware(['auth', 'jamaah'])->group(function () {
     Route::post('/pembayaran/{id}/confirm', [PembayaranController::class, 'confirm'])->name('pembayaran.confirm');
     Route::get('/pembayaran/{id}/status/{pembayaran}', [PembayaranController::class, 'status'])->name('pembayaran.status');
     Route::get('/pembayaran/{id}/invoice/{pembayaran}', [PembayaranController::class, 'invoice'])->name('pembayaran.invoice');
+
+    // Notifikasi
+    Route::post('/notifikasi/{id}/baca', [DashboardController::class, 'tandaiDibaca'])->name('notifikasi.baca');
+
+    // Profil
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 /*
@@ -106,7 +128,6 @@ Route::middleware(['auth', 'jamaah'])->group(function () {
 Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/search', [AdminDashboardController::class, 'search'])->name('dashboard.search');
 
     // Jamaah
     Route::get('/jamaah', [AdminJamaahController::class, 'index'])->name('jamaah');

@@ -44,8 +44,36 @@ class Jamaah extends Model
         return $this->hasOne(Pendaftaran::class)->latestOfMany();
     }
 
+    public function notifikasi()
+    {
+        return $this->hasMany(NotifikasiJamaah::class)->latest();
+    }
+
+    public function notifikasiBelumDibaca()
+    {
+        return $this->hasMany(NotifikasiJamaah::class)->where('dibaca', false)->latest();
+    }
+
     public function getInisialAttribute(): string
     {
         return strtoupper(mb_substr(trim($this->nama), 0, 1));
+    }
+
+    /**
+     * Jumlah dokumen yang sudah diunggah (KTP, Paspor, Foto).
+     */
+    public function getJumlahDokumenAttribute(): int
+    {
+        return collect(['foto_ktp', 'foto_paspor', 'foto'])
+            ->filter(fn ($field) => ! empty($this->{$field}))
+            ->count();
+    }
+
+    /**
+     * Apakah semua dokumen wajib sudah lengkap?
+     */
+    public function getDokumenLengkapAttribute(): bool
+    {
+        return $this->jumlah_dokumen === 3;
     }
 }

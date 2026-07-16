@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-public fixed-top" id="mainNav">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
-      <span class="brand-logo"><i class="fa-solid fa-mosque"></i></span>
+      <img src="{{ asset('images/logo.jpg') }}" alt="Smart Umrah" class="brand-logo-img">
       <span class="brand-text">Smart <span class="text-success">Umrah</span></span>
     </a>
 
@@ -57,6 +57,7 @@
   .navbar-public { transition: all .3s ease; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
   .navbar-public.scrolled { box-shadow: 0 2px 16px rgba(0,0,0,0.06); }
   .navbar-public .brand-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, #0c8a63, #087554); color: #fff; display: grid; place-items: center; font-size: .65rem; box-shadow: 0 4px 12px rgba(12,138,99,0.28); }
+  .navbar-public .brand-logo-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
   .navbar-public .brand-text { font-weight: 800; font-size: .82rem; color: #1b1b18; }
   .navbar-public .navbar-nav { gap: 1px !important; }
   .navbar-public .nav-link { font-weight: 600; color: #4b5563 !important; border-radius: 7px; padding: 3px 9px !important; transition: all .2s; font-size: .8rem; }

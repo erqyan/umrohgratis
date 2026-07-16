@@ -9,7 +9,11 @@
 
     <div style="background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
-            <div style="width: 64px; height: 64px; border-radius: 18px; background: #dff7ec; color: #0c8a63; display: grid; place-items: center; font-size: 1.5rem; font-weight: 700;">{{ $jamaah->inisial }}</div>
+            @if($jamaah->foto)
+                <img src="{{ asset('storage/' . $jamaah->foto) }}" alt="Profil" style="width: 64px; height: 64px; border-radius: 18px; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            @else
+                <div style="width: 64px; height: 64px; border-radius: 18px; background: #dff7ec; color: #0c8a63; display: grid; place-items: center; font-size: 1.5rem; font-weight: 700;">{{ $jamaah->inisial }}</div>
+            @endif
             <div style="flex: 1;">
                 <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0;">{{ $jamaah->nama }}</h1>
                 <p style="color: #7d8d83; margin: 4px 0 0;">{{ $jamaah->email ?? '-' }}</p>
@@ -67,16 +71,93 @@
 
             <div class="col-md-6">
                 <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 16px;">Verifikasi & Status</h3>
-                <form action="{{ route('admin.jamaah.verify', $jamaah->id) }}" method="POST" style="background: #f7fff8; border-radius: 14px; padding: 16px; margin-bottom: 20px;">
-                    @csrf
-                    <label class="form-label fw-bold small">Ubah Status Verifikasi</label>
-                    <select name="status_verifikasi" class="form-select mb-2">
-                        <option value="belum" {{ $jamaah->status_verifikasi === 'belum' ? 'selected' : '' }}>Belum Verifikasi</option>
-                        <option value="terverifikasi" {{ $jamaah->status_verifikasi === 'terverifikasi' ? 'selected' : '' }}>Terverifikasi</option>
-                        <option value="ditolak" {{ $jamaah->status_verifikasi === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm-green w-100"><i class="fas fa-check"></i> Update Status</button>
-                </form>
+                <div style="background: #f7fff8; border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+                    <form action="{{ route('admin.jamaah.verify', $jamaah->id) }}" method="POST" style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
+                        @csrf
+                        <div style="flex: 1; min-width: 180px;">
+                            <label class="form-label fw-bold small">Ubah Status Verifikasi</label>
+                            <select name="status_verifikasi" class="form-select" id="verifyStatus-{{ $jamaah->id }}">
+                                <option value="belum" {{ $jamaah->status_verifikasi === 'belum' ? 'selected' : '' }}>Belum Verifikasi</option>
+                                <option value="terverifikasi" {{ $jamaah->status_verifikasi === 'terverifikasi' ? 'selected' : '' }}>Terverifikasi</option>
+                                <option value="ditolak" {{ $jamaah->status_verifikasi === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#tolakVerifikasi-{{ $jamaah->id }}" onclick="document.getElementById('verifyStatus-{{ $jamaah->id }}').value='ditolak'"><i class="fas fa-times text-danger"></i> Tolak</button>
+                        <button type="submit" class="btn btn-sm-green"><i class="fas fa-check"></i> Update Status</button>
+                    </form>
+                </div>
+
+                <!-- Modal Tolak Verifikasi -->
+                <div class="modal fade" id="tolakVerifikasi-{{ $jamaah->id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background: #ffe6e6;">
+                                <h5 class="modal-title" style="color: #d4483c;"><i class="fas fa-exclamation-triangle"></i> Tolak Verifikasi Jamaah</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="{{ route('admin.jamaah.verify', $jamaah->id) }}" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <p style="font-size: 0.9rem; color: #5c7264;">Anda akan menolak verifikasi <strong>{{ $jamaah->nama }}</strong>. Pesan ini akan dikirim ke jamaah.</p>
+                                    <div class="mb-2">
+                                        <label class="form-label fw-bold">Alasan Penolakan <span style="color: #d4483c;">*</span></label>
+                                        <textarea name="alasan" rows="4" class="form-control" placeholder="Contoh: Dokumen tidak lengkap / NIK tidak valid / Foto paspor blur. Pesan ini akan dikirim ke jamaah." required minlength="5" maxlength="500"></textarea>
+                                        <small class="text-muted">Min 5 karakter. Pesan ditampilkan ke jamaah.</small>
+                                    </div>
+                                    <input type="hidden" name="status_verifikasi" value="ditolak">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Tolak &amp; Kirim Pesan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 16px;">Dokumen Jamaah</h3>
+                @php
+                    $dokumenList = [
+                        ['field' => 'foto_ktp', 'label' => 'KTP', 'icon' => 'fa-id-card'],
+                        ['field' => 'foto_paspor', 'label' => 'Paspor', 'icon' => 'fa-passport'],
+                        ['field' => 'foto', 'label' => 'Foto Diri', 'icon' => 'fa-user'],
+                    ];
+                    $jumlahDokumen = collect($dokumenList)->filter(fn ($d) => ! empty($jamaah->{$d['field']}))->count();
+                @endphp
+                <div style="background: #f7fff8; border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+                    @if($jumlahDokumen > 0)
+                        <div style="font-size: 0.8rem; color: #7d8d83; margin-bottom: 12px;">
+                            <i class="fas fa-paperclip"></i> {{ $jumlahDokumen }} dari {{ count($dokumenList) }} dokumen terunggah
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px;">
+                            @foreach($dokumenList as $dok)
+                                @php $path = $jamaah->{$dok['field']}; @endphp
+                                @if(! empty($path))
+                                    <div style="border: 1px solid #e2efe8; border-radius: 12px; overflow: hidden; background: #fff;">
+                                        <a href="{{ asset('storage/' . $path) }}" target="_blank" title="Lihat {{ $dok['label'] }}">
+                                            <img src="{{ asset('storage/' . $path) }}" alt="{{ $dok['label'] }}" style="width: 100%; height: 110px; object-fit: cover; display: block;">
+                                        </a>
+                                        <div style="padding: 8px 10px; font-size: 0.78rem; display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="color: #4b6858;"><i class="fas {{ $dok['icon'] }}"></i> {{ $dok['label'] }}</span>
+                                            <a href="{{ asset('storage/' . $path) }}" download title="Unduh {{ $dok['label'] }}" style="color: #0c8a63; text-decoration: none;"><i class="fas fa-download"></i></a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div style="border: 1px dashed #e2efe8; border-radius: 12px; padding: 16px; text-align: center; background: #fff; min-height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                        <i class="fas {{ $dok['icon'] }}" style="font-size: 1.4rem; color: #c5d3ca; margin-bottom: 6px;"></i>
+                                        <span style="font-size: 0.78rem; color: #9ca9a2;">{{ $dok['label'] }}</span>
+                                        <span style="font-size: 0.7rem; color: #b8c4bb;">belum ada</span>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    @else
+                        <div style="text-align: center; padding: 20px 0; color: #9ca9a2;">
+                            <i class="fas fa-folder-open" style="font-size: 1.8rem; margin-bottom: 8px; opacity: 0.5;"></i>
+                            <p style="margin: 0; font-size: 0.9rem;">Jamaah belum mengunggah dokumen apapun.</p>
+                        </div>
+                    @endif
+                </div>
 
                 <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 16px;">Informasi Paket</h3>
                 @if($paket)
@@ -113,6 +194,31 @@
                     </div>
                 @endif
             </div>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #f0f4ef;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-paper-plane text-success"></i> Riwayat Pesan ke Jamaah</h3>
+            @if($riwayatNotifikasi->isNotEmpty())
+                <div style="display: grid; gap: 10px;">
+                    @foreach($riwayatNotifikasi as $notif)
+                        <div style="background: {{ $notif->tipe === 'penolakan_verifikasi' || $notif->tipe === 'penolakan_pembayaran' ? '#fff5f5' : '#f7fff8' }}; border: 1px solid {{ $notif->tipe === 'penolakan_verifikasi' || $notif->tipe === 'penolakan_pembayaran' ? '#f5c2c2' : '#d7eedc' }}; border-left: 4px solid {{ $notif->tipe_warna }}; border-radius: 12px; padding: 14px 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                                <strong style="color: {{ $notif->tipe_warna }}; font-size: 0.88rem;"><i class="fas {{ $notif->dibaca ? 'fa-envelope-open' : 'fa-envelope' }}"></i> {{ $notif->judul }}</strong>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    @if(! $notif->dibaca)<span class="badge-soft-yellow" style="font-size: 0.68rem;">Belum dibaca</span>@else<span class="badge-soft-green" style="font-size: 0.68rem;">Dibaca</span>@endif
+                                    <small style="color: #9ca9a2; font-size: 0.72rem;">{{ $notif->created_at->format('d M Y, H:i') }}</small>
+                                </div>
+                            </div>
+                            <p style="margin: 0; color: #4b4040; font-size: 0.85rem; line-height: 1.5;">{{ $notif->pesan }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 24px; color: #9ca9a2; background: #fafafa; border-radius: 12px;">
+                    <i class="fas fa-inbox" style="font-size: 1.6rem; margin-bottom: 8px; opacity: 0.5;"></i>
+                    <p style="margin: 0; font-size: 0.88rem;">Belum ada pesan/notifikasi yang dikirim ke jamaah ini.</p>
+                </div>
+            @endif
         </div>
 
         <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #f0f4ef;">

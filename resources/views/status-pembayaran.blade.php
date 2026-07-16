@@ -9,12 +9,39 @@
         </a>
 
         <div style="background: #fff; border-radius: 24px; padding: 32px 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); margin-bottom: 24px; text-align: center;">
-            <div style="width: 88px; height: 88px; border-radius: 50%; background: #ecf9f1; display: grid; place-items: center; margin: 0 auto 18px; color: #0c8a63; font-size: 2.4rem;">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;">Bukti Pembayaran Berhasil Dikirim</h1>
-            <p style="color: #5c7264; line-height: 1.7;">Terima kasih. Bukti pembayaran Anda telah kami terima dan sedang menunggu proses verifikasi dari Smart Umrah.</p>
+            @if($pembayaran->status === 'ditolak')
+                <div style="width: 88px; height: 88px; border-radius: 50%; background: #ffe6e6; display: grid; place-items: center; margin: 0 auto 18px; color: #d4483c; font-size: 2.4rem;">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; color: #d4483c;">Pembayaran Ditolak</h1>
+                <p style="color: #5c7264; line-height: 1.7;">Maaf, pembayaran Anda ditolak oleh admin. Silakan periksa alasan di bawah dan lakukan pembayaran ulang.</p>
+            @elseif($pembayaran->status === 'terverifikasi')
+                <div style="width: 88px; height: 88px; border-radius: 50%; background: #ecf9f1; display: grid; place-items: center; margin: 0 auto 18px; color: #0c8a63; font-size: 2.4rem;">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;">Pembayaran Terverifikasi</h1>
+                <p style="color: #5c7264; line-height: 1.7;">Alhamdulillah! Pembayaran Anda telah terverifikasi. Pendaftaran umrah Anda aktif.</p>
+            @else
+                <div style="width: 88px; height: 88px; border-radius: 50%; background: #ecf9f1; display: grid; place-items: center; margin: 0 auto 18px; color: #0c8a63; font-size: 2.4rem;">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;">Bukti Pembayaran Berhasil Dikirim</h1>
+                <p style="color: #5c7264; line-height: 1.7;">Terima kasih. Bukti pembayaran Anda telah kami terima dan sedang menunggu proses verifikasi dari Smart Umrah.</p>
+            @endif
         </div>
+
+        @if($pembayaran->status === 'ditolak' && $notifikasiPenolakan)
+        <div style="background: #fff5f5; border: 1px solid #f5c2c2; border-left: 4px solid #d4483c; border-radius: 18px; padding: 20px 22px; margin-bottom: 24px;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fa-solid fa-comment-dots" style="color: #d4483c; font-size: 1.3rem; margin-top: 2px;"></i>
+                <div style="flex: 1;">
+                    <strong style="display: block; color: #d4483c; font-size: 0.95rem; margin-bottom: 8px;">Pesan dari Admin: {{ $notifikasiPenolakan->judul }}</strong>
+                    <p style="color: #5c4848; font-size: 0.9rem; line-height: 1.6; margin: 0;">{{ $notifikasiPenolakan->pesan }}</p>
+                    <small style="color: #9ca9a2; font-size: 0.75rem; display: block; margin-top: 10px;">{{ $notifikasiPenolakan->created_at->format('d F Y, H:i') }}</small>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <div style="background: #fff; border-radius: 20px; padding: 22px; border: 1px solid #dbe6dc; margin-bottom: 24px;">
             <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 18px;">Detail Pembayaran</h3>

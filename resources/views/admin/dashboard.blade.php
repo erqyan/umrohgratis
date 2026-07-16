@@ -41,75 +41,24 @@
             </div>
             <div class="stat-icon icon-red"><i class="fas fa-clipboard-list"></i></div>
         </div>
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-label">Total Pendapatan</div>
+                <div class="stat-value" style="font-size: 1.3rem;">Rp {{ number_format($pendapatan, 0, ',', '.') }}</div>
+                <div class="stat-sub">pembayaran terverifikasi</div>
+            </div>
+            <div class="stat-icon icon-green"><i class="fas fa-money-check-dollar"></i></div>
+        </div>
     </div>
 
-    <div class="data-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
-            <div>
-                <h2 style="font-size: 1.25rem; font-weight: 700; margin: 0;">Jamaah Terbaru</h2>
-                <p style="color: #7d8d83; font-size: 0.9rem; margin: 4px 0 0;">Daftar jamaah yang baru terdaftar</p>
-            </div>
-            <form method="GET" action="{{ route('admin.dashboard.search') }}" class="d-flex gap-2" style="flex: 1; max-width: 360px;">
-                <input type="text" name="q" class="form-control" placeholder="Cari nama atau email jamaah..." value="{{ $search ?? '' }}">
-                <button type="submit" class="btn btn-sm-green"><i class="fas fa-search"></i></button>
-            </form>
+    <div class="data-card" style="text-align: center; padding: 40px 20px;">
+        <div style="width: 64px; height: 64px; border-radius: 16px; background: #e8f5f0; color: #0c8a63; display: grid; place-items: center; margin: 0 auto 16px; font-size: 1.75rem;">
+            <i class="fas fa-users"></i>
         </div>
-
-        @if(session('search') !== null && $recentJamaah->isEmpty())
-            <div style="text-align: center; padding: 40px; color: #7d8d83;">
-                <i class="fas fa-search" style="font-size: 2rem; opacity: 0.4; margin-bottom: 12px;"></i>
-                <p>Tidak ada jamaah yang cocok dengan pencarian "{{ $search }}".</p>
-            </div>
-        @else
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead style="background: #f7fff8;">
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Paket</th>
-                            <th>Status</th>
-                            <th>Tgl Daftar</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recentJamaah as $jamaah)
-                            @php
-                                $lastPendaftaran = $jamaah->pendaftarans->last();
-                                $paketName = $lastPendaftaran->paketUmrah->nama ?? '-';
-                            @endphp
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #dff7ec; color: #0c8a63; display: grid; place-items: center; font-weight: 700; font-size: 0.85rem;">{{ $jamaah->inisial }}</div>
-                                        <strong>{{ $jamaah->nama }}</strong>
-                                    </div>
-                                </td>
-                                <td style="color: #7d8d83;">{{ $jamaah->email }}</td>
-                                <td>{{ $paketName }}</td>
-                                <td>
-                                    @if($jamaah->status_verifikasi === 'terverifikasi')
-                                        <span class="badge-soft-green"><i class="fas fa-check"></i> Terverifikasi</span>
-                                    @else
-                                        <span class="badge-soft-yellow"><i class="fas fa-clock"></i> Belum</span>
-                                    @endif
-                                </td>
-                                <td style="color: #7d8d83; font-size: 0.85rem;">{{ $jamaah->created_at->format('d M Y') }}</td>
-                                <td>
-                                    <a href="{{ route('admin.jamaah.detail', $jamaah->id) }}" class="btn-sm-green"><i class="fas fa-eye"></i> Detail</a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7d8d83;">Belum ada jamaah terdaftar.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                {{ $recentJamaah->links() }}
-            </div>
-        @endif
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin: 0;">Data Jamaah</h2>
+        <p style="color: #7d8d83; font-size: 0.9rem; margin: 8px 0 20px;">Kelola seluruh data jamaah terdaftar</p>
+        <a href="{{ route('admin.jamaah') }}" class="btn-sm-green" style="padding: 10px 28px; font-size: 0.95rem; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrow-right"></i> Lihat Semua Jamaah
+        </a>
     </div>
 @endsection

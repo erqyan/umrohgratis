@@ -39,69 +39,109 @@
         .hero::before {
             content: '';
             position: absolute;
-            top: -120px; right: -120px;
-            width: 420px; height: 420px;
-            background: radial-gradient(circle, rgba(12,138,99,0.15), transparent 70%);
+            top: -10%; right: -10%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(12,138,99,0.25), transparent 70%);
+            filter: blur(40px);
             border-radius: 50%;
+            animation: floatBlob 10s infinite alternate ease-in-out;
             z-index: 0;
         }
         .hero::after {
             content: '';
             position: absolute;
-            bottom: -150px; left: -100px;
-            width: 380px; height: 380px;
-            background: radial-gradient(circle, rgba(212,161,55,0.12), transparent 70%);
+            bottom: -15%; left: -10%;
+            width: 450px; height: 450px;
+            background: radial-gradient(circle, rgba(212,161,55,0.2), transparent 70%);
+            filter: blur(40px);
             border-radius: 50%;
+            animation: floatBlob 12s infinite alternate-reverse ease-in-out;
             z-index: 0;
+        }
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-40px, 50px) scale(1.1); }
         }
         .hero .container { position: relative; z-index: 1; }
         .hero-badge {
             display: inline-flex; align-items: center; gap: 8px;
-            background: var(--green-light); color: var(--green-dark);
-            border-radius: 999px; padding: 6px 16px;
-            font-size: .8rem; font-weight: 700;
-            margin-bottom: 16px;
+            background: rgba(12,138,99,0.1); color: var(--green-dark);
+            border: 1px solid rgba(12,138,99,0.2);
+            border-radius: 999px; padding: 8px 18px;
+            font-size: .85rem; font-weight: 700;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(12,138,99,0.08);
         }
-        .hero-title { font-size: clamp(1.7rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
-        .hero-title .hl { background: linear-gradient(135deg, var(--green), var(--green-dark)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-sub { color: var(--muted); font-size: 1.02rem; line-height: 1.65; max-width: 520px; }
-        .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+        .hero-title { font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; }
+        .hero-title .hl { 
+            background: linear-gradient(135deg, var(--green), #20b2aa); 
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; 
+            text-shadow: 0 4px 16px rgba(12,138,99,0.2);
+        }
+        .hero-sub { color: var(--muted); font-size: 1.05rem; line-height: 1.7; max-width: 540px; }
+        .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
         .btn-cta {
             background: linear-gradient(135deg, var(--green), var(--green-dark));
             color: #fff; border: none; border-radius: 12px;
-            padding: 11px 24px; font-weight: 700; font-size: .95rem;
-            box-shadow: 0 8px 22px rgba(12,138,99,0.3);
-            transition: transform .2s, box-shadow .2s; text-decoration: none;
+            padding: 13px 28px; font-weight: 700; font-size: 1rem;
+            box-shadow: 0 8px 24px rgba(12,138,99,0.35);
+            transition: all .3s; text-decoration: none;
             display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-cta:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 14px 30px rgba(12,138,99,0.4); }
-        .btn-ghost-cta {
-            background: #fff; color: #1b1b18; border: 1px solid #e8eee9;
-            border-radius: 12px; padding: 11px 22px; font-weight: 700; font-size: .95rem;
-            transition: all .2s; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-ghost-cta:hover { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
-
-        .hero-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
-        .hero-feature { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #eef2ed; border-radius: 14px; padding: 12px 14px; box-shadow: 0 3px 12px rgba(0,0,0,0.04); }
-        .hero-feature-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--green-light); color: var(--green); display: grid; place-items: center; font-size: .95rem; flex-shrink: 0; }
-        .hero-feature h6 { margin: 0; font-weight: 700; font-size: .88rem; }
-        .hero-feature p { margin: 2px 0 0; font-size: .75rem; color: var(--muted); }
-
-        /* Hero image card */
-        .hero-visual { position: relative; }
-        .hero-card-main {
-            background: linear-gradient(150deg, var(--green), var(--green-dark));
-            border-radius: 24px; padding: 32px; color: #fff;
-            box-shadow: 0 24px 56px rgba(12,138,99,0.3);
             position: relative; overflow: hidden;
         }
-        .hero-card-main::before { content: ''; position: absolute; inset: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="80" cy="20" r="40" fill="rgba(255,255,255,0.08)"/><circle cx="20" cy="80" r="30" fill="rgba(255,255,255,0.06)"/></svg>') no-repeat; background-size: cover; }
-        .hero-card-main > * { position: relative; z-index: 1; }
-        .hero-mosque-icon { font-size: 3.6rem; margin-bottom: 12px; opacity: .95; }
-        .hero-card-main h3 { font-weight: 800; margin-bottom: 6px; font-size: 1.15rem; }
-        .hero-card-main p { opacity: .9; margin-bottom: 0; font-size: .9rem; }
+        .btn-cta::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left .5s ease;
+        }
+        .btn-cta:hover::after { left: 100%; }
+        .btn-cta:hover { color: #fff; transform: translateY(-3px); box-shadow: 0 12px 32px rgba(12,138,99,0.45); }
+        .btn-ghost-cta {
+            background: rgba(255,255,255,0.8); color: #1b1b18; border: 1px solid #e8eee9;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border-radius: 12px; padding: 13px 26px; font-weight: 700; font-size: 1rem;
+            transition: all .3s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        }
+        .btn-ghost-cta:hover { background: #fff; border-color: var(--green); color: var(--green-dark); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+
+        .hero-features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 36px; }
+        .hero-feature { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #eef2ed; border-radius: 16px; padding: 14px 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.05); transition: transform .2s; }
+        .hero-feature:hover { transform: translateY(-2px); }
+        .hero-feature-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, var(--green-light), #fff); color: var(--green); display: grid; place-items: center; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(12,138,99,0.1); }
+        .hero-feature h6 { margin: 0; font-weight: 700; font-size: .92rem; }
+        .hero-feature p { margin: 2px 0 0; font-size: .78rem; color: var(--muted); }
+
+        /* Hero image card */
+        .hero-visual { position: relative; perspective: 1000px; }
+        .hero-card-main {
+            border-radius: 28px; color: #fff;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+            position: relative; overflow: hidden;
+            background-image: url('{{ asset('images/hero_mecca.jpg') }}');
+            background-size: cover; background-position: center;
+            height: 480px; display: flex; flex-direction: column; justify-content: flex-end;
+            transform: rotateY(-5deg) rotateX(2deg);
+            transition: transform .4s ease;
+        }
+        .hero-card-main:hover { transform: rotateY(0) rotateX(0); }
+        .hero-card-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+            z-index: 1;
+        }
+        .hero-card-glass {
+            position: relative; z-index: 2;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 20px; padding: 24px; margin: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        .hero-mosque-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: .95; color: var(--gold); text-shadow: 0 2px 10px rgba(212,161,55,0.5); }
+        .hero-card-glass h3 { font-weight: 800; margin-bottom: 6px; font-size: 1.25rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .hero-card-glass p { opacity: .95; margin-bottom: 0; font-size: .95rem; line-height: 1.5; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
         .hero-stat-badge {
             position: absolute; bottom: -18px; right: -8px;
             background: #fff; border-radius: 16px; padding: 12px 18px;
@@ -127,10 +167,32 @@
         .section-eyebrow { color: var(--green); font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; }
 
         /* Stats strip */
-        .stats-strip { background: linear-gradient(135deg, var(--green), var(--green-dark)); border-radius: 28px; padding: 40px; color: #fff; box-shadow: 0 24px 60px rgba(12,138,99,0.25); }
-        .stat-item { text-align: center; }
-        .stat-item .num { font-size: 2.4rem; font-weight: 800; line-height: 1; }
-        .stat-item .lbl { opacity: .9; font-size: .9rem; margin-top: 6px; }
+        .stats-strip { 
+            background: linear-gradient(135deg, rgba(12,138,99,0.95), rgba(8,117,84,0.98)); 
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 32px; padding: 48px 40px; color: #fff; 
+            box-shadow: 0 32px 64px rgba(12,138,99,0.3); 
+            position: relative; overflow: hidden;
+        }
+        .stats-strip::before {
+            content: ''; position: absolute; top: -50%; left: -20%; width: 140%; height: 200%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.08), transparent 60%);
+            animation: rotateBg 20s linear infinite;
+        }
+        @keyframes rotateBg { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .stat-item { text-align: center; position: relative; z-index: 1; }
+        .stat-item .num { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; line-height: 1; text-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .stat-item .lbl { opacity: .9; font-size: .95rem; margin-top: 8px; font-weight: 500; }
+
+        /* Traffic visitor card */
+        .visitor-card { background: #fff; border: 1px solid #eef2ed; border-radius: 24px; padding: 32px; display: flex; align-items: center; gap: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); flex-wrap: wrap; }
+        .visitor-icon { width: 72px; height: 72px; border-radius: 18px; background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #fff; display: grid; place-items: center; font-size: 1.9rem; flex-shrink: 0; box-shadow: 0 10px 24px rgba(12,138,99,0.3); }
+        .visitor-info { flex: 1; min-width: 200px; }
+        .visitor-num { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: var(--green); line-height: 1; }
+        .visitor-label { font-size: 1.05rem; font-weight: 700; color: #1b1b18; margin-top: 6px; }
+        .visitor-sub { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+        @media (max-width: 576px) { .visitor-card { padding: 24px; } }
 
         /* Paket cards */
         .paket-card { background: #fff; border-radius: 24px; overflow: hidden; border: 1px solid #eef2ed; box-shadow: 0 8px 30px rgba(0,0,0,0.05); transition: transform .25s, box-shadow .25s; height: 100%; display: flex; flex-direction: column; }
@@ -251,17 +313,16 @@
 
                 <div class="col-lg-6">
                     <div class="hero-visual">
-                        <div class="hero-float-card">
-                            <div class="icon"><i class="fa-solid fa-medal"></i></div>
-                            <div><h6>Berpengalaman</h6><p>10+ tahun melayani</p></div>
-                        </div>
                         <div class="hero-card-main">
-                            <i class="fa-solid fa-mosque hero-mosque-icon"></i>
-                            <h3>Bismillah, Mari Beribadah</h3>
-                            <p>Temukan ketenangan batin dengan perjalanan umrah yang berkesan, didampingi tim profesional kami.</p>
+                            <div class="hero-card-overlay"></div>
+                            <div class="hero-card-glass">
+                                <i class="fa-solid fa-mosque hero-mosque-icon"></i>
+                                <h3>Bismillah, Mari Beribadah</h3>
+                                <p>Temukan ketenangan batin dengan perjalanan umrah yang berkesan, didampingi tim profesional kami.</p>
+                            </div>
                         </div>
                         <div class="hero-stat-badge">
-                            <div><div class="num">15.000+</div><div class="lbl">Jamaah Bahagia</div></div>
+                            <div><div class="num">{{ $jamaahCount }}+</div><div class="lbl">Jamaah Bahagia</div></div>
                         </div>
                     </div>
                 </div>
@@ -275,13 +336,13 @@
             <div class="row g-4">
                 <div class="col-6 col-md-3">
                     <div class="stat-item">
-                        <div class="num counter" data-target="15000">0</div>
+                        <div class="num counter" data-target="{{ $jamaahCount }}">0</div>
                         <div class="lbl">Jamaah Terlayani</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-item">
-                        <div class="num counter" data-target="120">0</div>
+                        <div class="num counter" data-target="{{ $kloterCount }}">0</div>
                         <div class="lbl">Kloter Terlaksana</div>
                     </div>
                 </div>
@@ -297,6 +358,18 @@
                         <div class="lbl">Dukungan Support</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TRAFFIC VISITOR ===== -->
+    <section class="container" style="margin-top: 24px;">
+        <div class="visitor-card reveal">
+            <div class="visitor-icon"><i class="fa-solid fa-eye"></i></div>
+            <div class="visitor-info">
+                <div class="visitor-num"><span class="counter" data-target="{{ $totalVisitors }}">{{ $totalVisitors }}</span></div>
+                <div class="visitor-label">Total Pengunjung Website</div>
+                <div class="visitor-sub">Terima kasih telah mengunjungi Smart Umrah</div>
             </div>
         </div>
     </section>
@@ -458,7 +531,7 @@
                         @else
                             <a href="{{ route('dashboard') }}" class="btn-cta" style="background: #fff; color: var(--green-dark);"><i class="fa-solid fa-gauge"></i> Lihat Dashboard</a>
                         @endguest
-                        <a href="https://wa.me/6281234567890" target="_blank" class="btn-ghost-cta" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.4);"><i class="fa-brands fa-whatsapp"></i> Konsultasi via WhatsApp</a>
+                        <a href="https://wa.me/6281325874378" target="_blank" class="btn-ghost-cta" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.4);"><i class="fa-brands fa-whatsapp"></i> Konsultasi via WhatsApp</a>
                     </div>
                 </div>
             </div>
@@ -471,15 +544,18 @@
             <div class="row g-4">
                 <div class="col-lg-4">
                     <div class="footer-brand">
-                        <div class="logo"><i class="fa-solid fa-mosque"></i></div>
-                        <h4>Smart Umrah</h4>
+                        <img src="{{ asset('images/logo.jpg') }}" alt="Smart Umrah" style="width: 48px; height: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+                        <div>
+                            <h4>Smart Umrah</h4>
+                            <p style="font-size: 0.72rem; color: #a3b8ab; margin: 0;">PT. KHOTIMAH AHMAD TOUR & TRAVEL</p>
+                        </div>
                     </div>
                     <p style="font-size: .9rem; line-height: 1.7;">Platform pendaftaran umrah terpercaya. Kami berkomitmen membantu Anda mewujudkan ibadah umrah dengan mudah, aman, dan berkesan.</p>
                     <div class="d-flex gap-2 mt-3">
-                        <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" class="social-btn"><i class="fa-brands fa-facebook"></i></a>
-                        <a href="https://wa.me/6281234567890" class="social-btn"><i class="fa-brands fa-whatsapp"></i></a>
-                        <a href="#" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="https://www.instagram.com/khotimah_ahmad.tour?igsh=MWxraHZhbnNqNnRmcw==" target="_blank" class="social-btn" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/1Bj5Vj6R28/?mibextid=wwXIfr" target="_blank" class="social-btn" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="https://wa.me/6281325874378" target="_blank" class="social-btn" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://maps.app.goo.gl/suqwVzM7WNLJBvL9A?g_st=iw" target="_blank" class="social-btn" title="Lokasi Google Maps"><i class="fa-solid fa-location-dot"></i></a>
                     </div>
                 </div>
                 <div class="col-6 col-lg-2">
@@ -496,22 +572,22 @@
                     <ul class="list-unstyled d-grid gap-2">
                         <li><a href="{{ route('register') }}">Pendaftaran</a></li>
                         <li><a href="{{ route('login') }}">Login</a></li>
-                        <li><a href="https://wa.me/6281234567890">Bantuan</a></li>
+                        <li><a href="https://wa.me/6281325874378" target="_blank">Bantuan</a></li>
                         <li><a href="#">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-4">
                     <h5>Kontak Kami</h5>
                     <ul class="list-unstyled d-grid gap-2">
-                        <li><a href="#"><i class="fa-solid fa-envelope me-2"></i> support@smartumrah.id</a></li>
-                        <li><a href="https://wa.me/6281234567890"><i class="fa-brands fa-whatsapp me-2"></i> +62 812-3456-7890</a></li>
-                        <li><a href="#"><i class="fa-solid fa-location-dot me-2"></i> Jakarta, Indonesia</a></li>
+                        <li><a href="mailto:ptkatt22@gmail.com"><i class="fa-solid fa-envelope me-2"></i> ptkatt22@gmail.com</a></li>
+                        <li><a href="https://wa.me/6281325874378" target="_blank"><i class="fa-brands fa-whatsapp me-2"></i> +62 813-2587-4378</a></li>
+                        <li><a href="https://maps.app.goo.gl/suqwVzM7WNLJBvL9A?g_st=iw" target="_blank"><i class="fa-solid fa-location-dot me-2"></i> Lihat Lokasi di Google Maps</a></li>
                     </ul>
                 </div>
             </div>
             <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <small>&copy; {{ date('Y') }} Smart Umrah. Semua hak dilindungi.</small>
+                <small>&copy; {{ date('Y') }} PT. KHOTIMAH AHMAD TOUR & TRAVEL (Smart Umrah). Semua hak dilindungi.</small>
                 <small>Dibuat dengan <i class="fa-solid fa-heart text-danger"></i> untuk jamaah Indonesia</small>
             </div>
         </div>

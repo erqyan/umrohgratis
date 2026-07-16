@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jamaah;
+use App\Models\NotifikasiJamaah;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 
@@ -49,11 +50,18 @@ class JamaahController extends Controller
         $paket = $pendaftaran?->paketUmrah;
         $pembayaran = $pendaftaran?->pembayaranTerakhir;
 
+        // Riwayat notifikasi penolakan yang pernah dikirim ke jamaah ini.
+        $riwayatNotifikasi = NotifikasiJamaah::where('jamaah_id', $jamaah->id)
+            ->orderByDesc('created_at')
+            ->take(10)
+            ->get();
+
         return view('admin.jamaah-detail', [
             'jamaah' => $jamaah,
             'pendaftaran' => $pendaftaran,
             'paket' => $paket,
             'pembayaran' => $pembayaran,
+            'riwayatNotifikasi' => $riwayatNotifikasi,
         ]);
     }
 
@@ -64,11 +72,30 @@ class JamaahController extends Controller
     {
         $jamaah = Jamaah::findOrFail($id);
 
-        $request->validate([
+        $rules = [
             'status_verifikasi' => ['required', 'in:belum,terverifikasi,ditolak'],
-        ]);
+        ];
 
-        $jamaah->update(['status_verifikasi' => $request->status_verifikasi]);
+        // Alasan wajib saat menolak.
+        if ($request->status_verifikasi === 'ditolak') {
+            $rules['alasan'] = ['required', 'string', 'min:5', 'max:500'];
+        }
+
+        $validated = $request->validate($rules);
+
+        $jamaah->update(['status_verifikasi' => $validated['status_verifikasi']]);
+
+        // Simpan notifikasi penolakan.
+        if ($validated['status_verifikasi'] === 'ditolak') {
+            NotifikasiJamaah::create([
+                'jamaah_id' => $jamaah->id,
+                'tipe' => NotifikasiJamaah::TIPE_PENOLAKAN_VERIFIKASI,
+                'judul' => 'Verifikasi Ditolak',
+                'pesan' => $validated['alasan'],
+                'terkait_type' => Jamaah::class,
+                'terkait_id' => $jamaah->id,
+            ]);
+        }
 
         return back()->with('success', 'Status verifikasi jamaah berhasil diperbarui.');
     }

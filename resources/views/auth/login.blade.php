@@ -26,8 +26,6 @@
         .btn-login:hover { background: #087554; }
         .register { text-align: center; margin-top: 25px; }
         .register a { text-decoration: none; color: #0c8a63; font-weight: 700; }
-        .demo-box { margin-top: 24px; padding: 14px 16px; background: #f7fff8; border: 1px solid #d7eedc; border-radius: 12px; font-size: 0.8rem; color: #4f6b60; line-height: 1.6; }
-        .demo-box strong { color: #0c8a63; }
         @media(max-width: 500px){ .login-card { border-radius: 0; min-height: 100vh; box-shadow: none; } }
     </style>
 </head>
@@ -85,12 +83,6 @@
 
         <div class="register">
             <p>Belum punya akun?<br><a href="{{ route('register') }}">Daftar</a></p>
-        </div>
-
-        <div class="demo-box">
-            <strong>Akun Demo:</strong><br>
-            Admin &rarr; <code>admin@smartumrah.test</code> / <code>password</code><br>
-            Jamaah &rarr; <code>siti.aminah@email.com</code> / <code>password</code>
         </div>
 
     </div>

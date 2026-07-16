@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\PembayaranExport;
 use App\Http\Controllers\Controller;
+use App\Models\NotifikasiJamaah;
 use App\Models\Pembayaran;
 use App\Traits\ExportsInvoicePdf;
 use Illuminate\Http\Request;
@@ -55,20 +56,42 @@ class PembayaranController extends Controller
     {
         $pembayaran = Pembayaran::findOrFail($id);
 
-        $request->validate([
+        $rules = [
             'status' => ['required', 'in:menunggu,terverifikasi,ditolak'],
-        ]);
+        ];
 
-        $pembayaran->update(['status' => $request->status]);
+        // Alasan wajib saat menolak.
+        if ($request->status === 'ditolak') {
+            $rules['alasan'] = ['required', 'string', 'min:5', 'max:500'];
+        }
+
+        $validated = $request->validate($rules);
+
+        $pembayaran->update(['status' => $validated['status']]);
 
         // Sinkronisasi: jika pembayaran terverifikasi, update status pendaftaran.
-        if ($request->status === 'terverifikasi' && $pembayaran->pendaftaran) {
+        if ($validated['status'] === 'terverifikasi' && $pembayaran->pendaftaran) {
             $pembayaran->pendaftaran->update(['status' => 'aktif']);
 
             // Update status verifikasi jamaah juga.
             if ($pembayaran->pendaftaran->jamaah) {
                 $pembayaran->pendaftaran->jamaah->update(['status_verifikasi' => 'terverifikasi']);
             }
+        }
+
+        // Simpan notifikasi penolakan untuk jamaah.
+        if ($validated['status'] === 'ditolak' && $pembayaran->pendaftaran && $pembayaran->pendaftaran->jamaah) {
+            NotifikasiJamaah::create([
+                'jamaah_id' => $pembayaran->pendaftaran->jamaah->id,
+                'tipe' => NotifikasiJamaah::TIPE_PENOLAKAN_PEMBAYARAN,
+                'judul' => 'Pembayaran Ditolak',
+                'pesan' => $validated['alasan'],
+                'terkait_type' => Pembayaran::class,
+                'terkait_id' => $pembayaran->id,
+            ]);
+
+            // Update status pendaftaran menjadi batal.
+            $pembayaran->pendaftaran->update(['status' => 'batal']);
         }
 
         return back()->with('success', 'Status pembayaran berhasil diperbarui.');

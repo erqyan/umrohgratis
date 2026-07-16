@@ -43,6 +43,6 @@ class ForgotPasswordController extends Controller
         ]);
 
         return redirect()->route('verify.otp')
-            ->with('success', 'Kode OTP telah dikirim. Untuk keperluan demo, kode OTP Anda adalah: ' . $otp);
+            ->with('success', 'Kode OTP telah dibuat. Untuk keperluan demo, kode OTP Anda adalah: ' . $otp);
     }
 }

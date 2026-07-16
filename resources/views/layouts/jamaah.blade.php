@@ -56,15 +56,20 @@
         <div class="navbar-left">
             <button class="navbar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
             <a href="{{ route('dashboard') }}" class="navbar-brand">
-                <i class="fa-solid fa-compass"></i> Smart Umrah
+                <img src="{{ asset('images/logo.jpg') }}" alt="Smart Umrah" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"> Smart Umrah
             </a>
         </div>
         <div class="navbar-right" style="position: relative;">
-            <button class="profile-btn" onclick="toggleProfile(event)">
-                <i class="fa-solid fa-user"></i>
+            <button class="profile-btn" onclick="toggleProfile(event)" style="padding: 0; overflow: hidden; display: grid; place-items: center;">
+                @if($user->jamaah && $user->jamaah->foto)
+                    <img src="{{ asset('storage/' . $user->jamaah->foto) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                @else
+                    <i class="fa-solid fa-user"></i>
+                @endif
             </button>
             <div class="dropdown-profile" id="profileDropdown">
                 <a href="{{ route('dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                <a href="{{ route('profile.show') }}"><i class="fa-solid fa-user"></i> Profil Saya</a>
                 <form action="{{ route('logout') }}" method="POST" style="margin:0;">
                     @csrf
                     <button type="submit" style="all: unset; display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #d4483c; font-size: 0.9rem; width: 100%; cursor: pointer;">
@@ -78,10 +83,10 @@
     <div style="display: flex;">
         <aside class="sidebar" id="sidebar">
             <div class="brand">
-                <div class="brand-icon"><i class="fa-solid fa-compass"></i></div>
+                <img src="{{ asset('images/logo.jpg') }}" alt="Smart Umrah" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
                 <div class="brand-text">
                     <h3>Smart Umrah</h3>
-                    <p>Portal Jamaah</p>
+                    <p style="font-size: 0.62rem; line-height: 1.2;">PT. KHOTIMAH AHMAD TOUR & TRAVEL</p>
                 </div>
             </div>
 
@@ -90,22 +95,30 @@
                 <ul class="menu-list">
                     @php $current = request()->path(); @endphp
                     <li><a href="{{ route('dashboard') }}" class="{{ $current === 'dashboard' ? 'active' : '' }}"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
-                    <li><a href="{{ route('dashboard') }}#paket" class="{{ str_starts_with($current, 'paket') ? 'active' : '' }}"><i class="fa-solid fa-briefcase"></i> Pilih Paket</a></li>
-                    <li><a href="{{ route('dashboard') }}#riwayat"><i class="fa-solid fa-file-lines"></i> Status Pendaftaran</a></li>
+                    <li><a href="{{ route('profile.show') }}" class="{{ $current === 'profile' ? 'active' : '' }}"><i class="fa-solid fa-user"></i> Profil Saya</a></li>
+                    <li><a href="{{ route('paket.index') }}" class="{{ str_starts_with($current, 'paket') ? 'active' : '' }}"><i class="fa-solid fa-briefcase"></i> Pilih Paket</a></li>
+                    <li><a href="{{ route('pendaftaran.index') }}" class="{{ str_starts_with($current, 'status-pendaftaran') ? 'active' : '' }}"><i class="fa-solid fa-file-lines"></i> Status Pendaftaran</a></li>
                 </ul>
             </div>
 
             <div class="menu-section">
                 <p class="menu-title">Bantuan</p>
                 <ul class="menu-list">
-                    <li><a href="https://wa.me/6281234567890" target="_blank"><i class="fa-brands fa-whatsapp"></i> Hubungi Admin</a></li>
+                    <li><a href="https://wa.me/6281325874378" target="_blank"><i class="fa-brands fa-whatsapp"></i> Hubungi Admin</a></li>
+                    <li><a href="https://www.instagram.com/khotimah_ahmad.tour?igsh=MWxraHZhbnNqNnRmcw==" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.facebook.com/share/1Bj5Vj6R28/?mibextid=wwXIfr" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://maps.app.goo.gl/suqwVzM7WNLJBvL9A?g_st=iw" target="_blank"><i class="fa-solid fa-location-dot"></i> Lokasi Kami</a></li>
                     <li><a href="{{ route('dashboard') }}#faq"><i class="fa-solid fa-circle-question"></i> Bantuan &amp; FAQ</a></li>
                 </ul>
             </div>
 
             <div class="sidebar-footer">
                 <div class="profile-card">
-                    <div class="profile-avatar">{{ strtoupper(mb_substr(trim($user->name ?? 'J'), 0, 1)) }}</div>
+                    @if($user->jamaah && $user->jamaah->foto)
+                        <img src="{{ asset('storage/' . $user->jamaah->foto) }}" alt="Avatar" class="profile-avatar" style="object-fit: cover;">
+                    @else
+                        <div class="profile-avatar">{{ strtoupper(mb_substr(trim($user->name ?? 'J'), 0, 1)) }}</div>
+                    @endif
                     <div class="profile-info">
                         <h5>{{ $user->name ?? 'Jamaah' }}</h5>
                         <p>Jamaah Terdaftar</p>

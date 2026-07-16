@@ -69,7 +69,7 @@
 <body>
     <div class="navbar-top">
         <a href="{{ route('admin.dashboard') }}" class="navbar-brand-admin">
-            <i class="fas fa-mosque"></i> Smart Umrah Admin
+            <img src="{{ asset('images/logo.jpg') }}" alt="Smart Umrah" style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"> Smart Umrah Admin
         </a>
         <div class="navbar-right">
             <div style="position: relative;">
@@ -94,10 +94,10 @@
     <div class="container-admin">
         <aside class="sidebar-admin">
             <div class="sidebar-brand">
-                <div class="brand-icon"><i class="fas fa-mosque"></i></div>
+                <img src="{{ asset('images/logo.jpg') }}" alt="Smart Umrah" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
                 <div class="brand-text">
                     <h3>Smart Umrah</h3>
-                    <p>Admin System</p>
+                    <p style="font-size: 0.62rem; line-height: 1.2;">PT. KHOTIMAH AHMAD TOUR & TRAVEL</p>
                 </div>
             </div>
 

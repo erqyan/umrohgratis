@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\NotifikasiJamaah;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 
@@ -45,11 +46,31 @@ class PendaftaranController extends Controller
     {
         $pendaftaran = Pendaftaran::findOrFail($id);
 
-        $request->validate([
+        $rules = [
             'status' => ['required', 'in:draft,pending,aktif,selesai,batal'],
-        ]);
+        ];
 
-        $pendaftaran->update(['status' => $request->status]);
+        // Alasan wajib saat membatalkan.
+        if ($request->status === 'batal') {
+            $rules['alasan'] = ['required', 'string', 'min:5', 'max:500'];
+        }
+
+        $validated = $request->validate($rules);
+
+        $statusLama = $pendaftaran->status;
+        $pendaftaran->update(['status' => $validated['status']]);
+
+        // Notifikasi ke jamaah saat pendaftarannya dibatalkan.
+        if ($validated['status'] === 'batal' && $statusLama !== 'batal' && $pendaftaran->jamaah) {
+            NotifikasiJamaah::create([
+                'jamaah_id' => $pendaftaran->jamaah->id,
+                'tipe' => 'pembatalan_pendaftaran',
+                'judul' => 'Pendaftaran Dibatalkan',
+                'pesan' => $validated['alasan'],
+                'terkait_type' => Pendaftaran::class,
+                'terkait_id' => $pendaftaran->id,
+            ]);
+        }
 
         return back()->with('success', 'Status pendaftaran berhasil diperbarui.');
     }

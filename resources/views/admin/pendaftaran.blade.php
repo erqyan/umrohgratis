@@ -72,12 +72,40 @@
                                         <li><form action="{{ route('admin.pendaftaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="pending" class="dropdown-item">Pending</button></form></li>
                                         <li><form action="{{ route('admin.pendaftaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="aktif" class="dropdown-item">Aktif</button></form></li>
                                         <li><form action="{{ route('admin.pendaftaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="selesai" class="dropdown-item">Selesai</button></form></li>
-                                        <li><form action="{{ route('admin.pendaftaran.status', $p->id) }}" method="POST">@csrf<button type="submit" name="status" value="batal" class="dropdown-item">Batal</button></form></li>
+                                        <li><button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#batalPendaftaran-{{ $p->id }}"><i class="fas fa-times"></i> Batal</button></li>
                                     </ul>
                                 </div>
                                 @if($p->jamaah)<a href="{{ route('admin.jamaah.detail', $p->jamaah->id) }}" class="btn-sm-green mt-1"><i class="fas fa-eye"></i></a>@endif
                             </td>
                         </tr>
+
+                        <!-- Modal Batalkan Pendaftaran -->
+                        <div class="modal fade" id="batalPendaftaran-{{ $p->id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background: #ffe6e6;">
+                                        <h5 class="modal-title" style="color: #d4483c;"><i class="fas fa-exclamation-triangle"></i> Batalkan Pendaftaran</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="{{ route('admin.pendaftaran.status', $p->id) }}" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <p style="font-size: 0.9rem; color: #5c7264;">Anda akan membatalkan pendaftaran <strong>{{ $p->jamaah->nama ?? '-' }}</strong> untuk paket <strong>{{ $p->paketUmrah->nama ?? '-' }}</strong>.</p>
+                                            <div class="mb-2">
+                                                <label class="form-label fw-bold">Alasan Pembatalan <span style="color: #d4483c;">*</span></label>
+                                                <textarea name="alasan" rows="4" class="form-control" placeholder="Contoh: Kuota penuh / Dokumen tidak valid / Minta per data diri. Pesan ini akan dikirim ke jamaah." required minlength="5" maxlength="500"></textarea>
+                                                <small class="text-muted">Pesan ini akan ditampilkan kepada jamaah. Min 5 karakter.</small>
+                                            </div>
+                                            <input type="hidden" name="status" value="batal">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Batalkan &amp; Kirim Pesan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     @empty
                         <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7d8d83;">Tidak ada data pendaftaran.</td></tr>
                     @endforelse

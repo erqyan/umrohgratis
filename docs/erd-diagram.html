@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD Smart Umrah - Sutech</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f1f5f9;
+    padding: 40px;
+    width: 1700px;
+  }
+
+  /* ===== HEADER ===== */
+  .doc-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 24px;
+    background: linear-gradient(135deg, #0c8a63 0%, #0a6e50 100%);
+    color: white;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(12,138,99,0.25);
+  }
+  .doc-header h1 { font-size: 30px; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .doc-header p { font-size: 14px; opacity: 0.92; }
+  .doc-header .meta { font-size: 12px; opacity: 0.8; margin-top: 8px; }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    font-size: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* ===== CANVAS / DIAGRAM AREA ===== */
+  .canvas {
+    position: relative;
+    width: 1620px;
+    height: 1180px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  /* SVG for relationship lines */
+  .canvas svg.lines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ===== ENTITY BOX ===== */
+  .entity {
+    position: absolute;
+    z-index: 2;
+    width: 250px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    overflow: hidden;
+    border: 1.5px solid #cbd5e1;
+  }
+  .entity-header {
+    padding: 9px 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+  }
+  .entity-header .icon { font-size: 15px; }
+  .entity-body { font-size: 11.5px; }
+
+  .field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 12px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .field:last-child { border-bottom: none; }
+  .field .fname { color: #334155; }
+  .field .ftype { color: #94a3b8; font-size: 10px; }
+  .field.pk { background: #fef9c3; }
+  .field.pk .fname { font-weight: 700; color: #713f12; }
+  .field.fk { background: #eff6ff; }
+  .field.fk .fname { color: #1e40af; font-weight: 600; }
+
+  .badge {
+    font-size: 8.5px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+  .badge.pk { background: #fde047; color: #713f12; }
+  .badge.fk { background: #bfdbfe; color: #1e40af; }
+
+  /* Entity color themes */
+  .t-users   .entity-header { background: #2563eb; }
+  .t-jamaah  .entity-header { background: #16a34a; }
+  .t-paket   .entity-header { background: #d97706; }
+  .t-penda   .entity-header { background: #7c3aed; }
+  .t-bayar   .entity-header { background: #db2777; }
+  .t-notif   .entity-header { background: #0d9488; }
+  .t-visit   .entity-header { background: #475569; }
+
+  /* Relationship labels */
+  .rel-label {
+    position: absolute;
+    z-index: 3;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #0c8a63;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  /* ===== FOOTER NOTE ===== */
+  .footnote {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 11px;
+    color: #64748b;
+  }
+
+  /* SVG line styling */
+  .conn {
+    stroke: #94a3b8;
+    stroke-width: 2;
+    fill: none;
+  }
+  .conn-strong { stroke: #0c8a63; stroke-width: 2.5; }
+  .crow {
+    stroke: #64748b;
+    stroke-width: 1.8;
+    fill: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <h1>Entity Relationship Diagram (ERD)</h1>
+  <p><strong>Smart Umrah &mdash; Sutech</strong> &nbsp;|&nbsp; Sistem Manajemen Travel Umrah</p>
+  <div class="meta">Laravel 11 &middot; 7 Entitas Bisnis &middot; Generate 15 Juli 2026</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:#fde047"></span>PK &mdash; Primary Key</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#bfdbfe"></span>FK &mdash; Foreign Key</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>users</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>jamaahs</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#d97706"></span>paket_umrahs</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#7c3aed"></span>pendaftarans</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#db2777"></span>pembayarans</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#0d9488"></span>notifikasi_jamaah</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#475569"></span>visitors</div>
+</div>
+
+<div class="canvas">
+
+  <!-- ===== Relationship Lines (SVG) ===== -->
+  <svg class="lines" viewBox="0 0 1620 1180" preserveAspectRatio="none">
+    <!-- users (1:1) -> jamaahs -->
+    <path class="conn conn-strong" d="M 295 140 L 420 140" />
+    <!-- users (1:N) -> visitors -->
+    <path class="conn" d="M 170 240 L 170 520 L 1310 520 L 1310 560" />
+    <!-- jamaahs (1:N) -> pendaftarans -->
+    <path class="conn conn-strong" d="M 545 240 L 545 470 L 685 470" />
+    <!-- jamaahs (1:N) -> notifikasi -->
+    <path class="conn" d="M 670 140 L 990 140" />
+    <!-- paket (1:N) -> pendaftarans -->
+    <path class="conn conn-strong" d="M 810 560 L 810 560" />
+    <path class="conn conn-strong" d="M 810 520 L 810 470" />
+    <!-- pendaftarans (1:N) -> pembayarans -->
+    <path class="conn conn-strong" d="M 935 440 L 1090 440" />
+  </svg>
+
+  <!-- ===== USERS ===== -->
+  <div class="entity t-users" style="top:40px; left:45px;">
+    <div class="entity-header"><span class="icon">&#128100;</span> users</div>
+    <div class="entity-body">
+      <div class="field pk"><span class="fname">id <span class="badge pk">PK</span></span><span class="ftype">bigint</span></div>
+      <div class="field"><span class="fname">name</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">email</span><span class="ftype">varchar UK</span></div>
+      <div class="field"><span class="fname">password</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">role</span><span class="ftype">enum</span></div>
+      <div class="field"><span class="fname">phone</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">email_verified_at</span><span class="ftype">timestamp</span></div>
+      <div class="field"><span class="fname">remember_token</span><span class="ftype">varchar</span></div>
+    </div>
+  </div>
+
+  <!-- ===== JAMAAHS ===== -->
+  <div class="entity t-jamaah" style="top:40px; left:420px;">
+    <div class="entity-header"><span class="icon">&#128113;</span> jamaahs</div>
+    <div class="entity-body">
+      <div class="field pk"><span class="fname">id <span class="badge pk">PK</span></span><span class="ftype">bigint</span></div>
+      <div class="field fk"><span class="fname">user_id <span class="badge fk">FK</span></span><span class="ftype">&rarr; users</span></div>
+      <div class="field"><span class="fname">nama</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">email, telepon</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">nik</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">tempat_lahir</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">tanggal_lahir</span><span class="ftype">date</span></div>
+      <div class="field"><span class="fname">jenis_kelamin</span><span class="ftype">enum</span></div>
+      <div class="field"><span class="fname">pasport, tanggal_paspor</span><span class="ftype">varchar/date</span></div>
+      <div class="field"><span class="fname">alamat</span><span class="ftype">text</span></div>
+      <div class="field"><span class="fname">foto_ktp/paspor/foto</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">status_verifikasi</span><span class="ftype">enum</span></div>
+    </div>
+  </div>
+
+  <!-- Relationship label users-jamaahs -->
+  <div class="rel-label" style="top:125px; left:325px;">1 : 1</div>
+
+  <!-- ===== NOTIFIKASI ===== -->
+  <div class="entity t-notif" style="top:40px; left:990px;">
+    <div class="entity-header"><span class="icon">&#128276;</span> notifikasi_jamaah</div>
+    <div class="entity-body">
+      <div class="field pk"><span class="fname">id <span class="badge pk">PK</span></span><span class="ftype">bigint</span></div>
+      <div class="field fk"><span class="fname">jamaah_id <span class="badge fk">FK</span></span><span class="ftype">&rarr; jamaahs</span></div>
+      <div class="field"><span class="fname">tipe</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">judul</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">pesan</span><span class="ftype">text</span></div>
+      <div class="field"><span class="fname">terkait_type</span><span class="ftype">polymorphic</span></div>
+      <div class="field"><span class="fname">terkait_id</span><span class="ftype">bigint</span></div>
+      <div class="field"><span class="fname">dibaca</span><span class="ftype">boolean</span></div>
+    </div>
+  </div>
+  <div class="rel-label" style="top:125px; left:800px;">1 : N</div>
+
+  <!-- ===== PAKET_UMRAHS ===== -->
+  <div class="entity t-paket" style="top:560px; left:685px;">
+    <div class="entity-header"><span class="icon">&#128230;</span> paket_umrahs</div>
+    <div class="entity-body">
+      <div class="field pk"><span class="fname">id <span class="badge pk">PK</span></span><span class="ftype">bigint</span></div>
+      <div class="field"><span class="fname">nama</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">tipe</span><span class="ftype">reguler/plus/vip</span></div>
+      <div class="field"><span class="fname">deskripsi</span><span class="ftype">text</span></div>
+      <div class="field"><span class="fname">harga</span><span class="ftype">decimal(15,2)</span></div>
+      <div class="field"><span class="fname">durasi, kuota</span><span class="ftype">int</span></div>
+      <div class="field"><span class="fname">hotel, maskapai</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">tanggal_berangkat</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">fasilitas</span><span class="ftype">json</span></div>
+      <div class="field"><span class="fname">itinerary</span><span class="ftype">json</span></div>
+      <div class="field"><span class="fname">status</span><span class="ftype">aktif/nonaktif</span></div>
+    </div>
+  </div>
+
+  <!-- ===== PENDAFTARANS (junction) ===== -->
+  <div class="entity t-penda" style="top:340px; left:685px;">
+    <div class="entity-header"><span class="icon">&#9999;&#65039;</span> pendaftarans</div>
+    <div class="entity-body">
+      <div class="field pk"><span class="fname">id <span class="badge pk">PK</span></span><span class="ftype">bigint</span></div>
+      <div class="field fk"><span class="fname">jamaah_id <span class="badge fk">FK</span></span><span class="ftype">&rarr; jamaahs</span></div>
+      <div class="field fk"><span class="fname">paket_umrah_id <span class="badge fk">FK</span></span><span class="ftype">&rarr; paket</span></div>
+      <div class="field"><span class="fname">tanggal_pendaftaran</span><span class="ftype">date</span></div>
+      <div class="field"><span class="fname">status</span><span class="ftype">enum 5 nilai</span></div>
+      <div class="field"><span class="fname">catatan</span><span class="ftype">text</span></div>
+    </div>
+  </div>
+
+  <div class="rel-label" style="top:380px; left:600px;">1 : N</div>
+  <div class="rel-label" style="top:540px; left:770px;">1 : N</div>
+
+  <!-- ===== PEMBAYARANS ===== -->
+  <div class="entity t-bayar" style="top:340px; left:1090px;">
+    <div class="entity-header"><span class="icon">&#128176;</span> pembayarans</div>
+    <div class="entity-body">
+      <div class="field pk"><span class="fname">id <span class="badge pk">PK</span></span><span class="ftype">bigint</span></div>
+      <div class="field fk"><span class="fname">pendaftaran_id <span class="badge fk">FK</span></span><span class="ftype">&rarr; pendaftaran</span></div>
+      <div class="field"><span class="fname">metode</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">jumlah</span><span class="ftype">decimal(15,2)</span></div>
+      <div class="field"><span class="fname">biaya_admin</span><span class="ftype">decimal(15,2)</span></div>
+      <div class="field"><span class="fname">total</span><span class="ftype">decimal(15,2)</span></div>
+      <div class="field"><span class="fname">bukti_pembayaran</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">tanggal_bayar</span><span class="ftype">date</span></div>
+      <div class="field"><span class="fname">status</span><span class="ftype">enum 3 nilai</span></div>
+    </div>
+  </div>
+  <div class="rel-label" style="top:380px; left:1000px;">1 : N</div>
+
+  <!-- ===== VISITORS ===== -->
+  <div class="entity t-visit" style="top:560px; left:1185px;">
+    <div class="entity-header"><span class="icon">&#128065;&#65039;</span> visitors</div>
+    <div class="entity-body">
+      <div class="field pk"><span class="fname">id <span class="badge pk">PK</span></span><span class="ftype">bigint</span></div>
+      <div class="field fk"><span class="fname">user_id <span class="badge fk">FK</span></span><span class="ftype">&rarr; users</span></div>
+      <div class="field"><span class="fname">ip_address</span><span class="ftype">varchar(45)</span></div>
+      <div class="field"><span class="fname">page</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">user_agent</span><span class="ftype">varchar</span></div>
+      <div class="field"><span class="fname">visited_at</span><span class="ftype">date</span></div>
+    </div>
+  </div>
+  <div class="rel-label" style="top:540px; left:1280px;">1 : N</div>
+
+</div>
+
+<div class="footnote">
+  <strong>Alur Bisnis Utama:</strong> User &rarr; Jamaah &rarr; Pendaftaran &rarr; Pembayaran &nbsp;&bull;&nbsp;
+  <strong>On Delete:</strong> CASCADE (jamaahs, pendaftarans, pembayarans, notifikasi) &middot; SET NULL (visitors)
+</div>
+
+</body>
+</html>
