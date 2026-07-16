@@ -1,12 +1,39 @@
 {
-  "buildCommand": "bash build.sh",
-  "outputDirectory": "public",
-  "framework": null,
-  "installCommand": "npm install",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.php"
+      "src": "api/index.php",
+      "use": "@vercel/php",
+      "config": {
+        "extensions": [
+          "curl",
+          "dom",
+          "mbstring",
+          "openssl",
+          "pdo",
+          "pdo_pgsql",
+          "pgsql",
+          "xml",
+          "tokenizer"
+        ]
+      }
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/build/(.*)",
+      "dest": "/build/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "api/index.php"
     }
   ]
 }
